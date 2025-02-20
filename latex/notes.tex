@@ -89,7 +89,17 @@ Setting it equal to zero, the minimum is realized by one of the points
   & t_a |\ tt_a'(t_a) = -\gamma, t_a > t^* \\
 \end{align*}
 
-Again, let's restrict to the case in which the travel time is gaussian.
+Note that, here, assuming
+
+\begin{equation}
+  \label{eq:cond_late_min}
+|tt_a'(t_a)| < 1 \ \forall t_a, \qquad \gamma > \alpha = 1
+\end{equation}
+implies that there is no time that satisfies the last condition, that means that arriving late never realises a (not even local) minimum.
+
+These assumptions are reasonable for what discussed earlier, but \textcolor{red}{this should be looked at better}.
+
+Again, let's look at the case in which the travel time is gaussian.
 I assume that the travel time is gaussian in function of the arrival time as well,
 and this can be justified by saying that
 \[t_a - t_d >> \max_t | tt'(t)|\]
@@ -106,6 +116,18 @@ and so
 \end{equation}
 This can't be inverted analytically and the solutions to the equations above can be found numerically.
 (I hope other approaches for minimizing the cost are possible, but nothing comes to my mind right now).
+
+In order to find the minimum of the function \(C(t_a)\) there are thus two possible procedures (that are actually the same one...).
+\begin{itemize}
+\item Running a root finding algorithm on the functions \(tt_a'(t_a) - \beta,\ tt_a'(t_a) + \gamma\) to find at most two local minima, to be compared to the one potentially realized by \(t^*\) to find the minimum
+\item Directly running an optimizer on the cost function \(C(t_a)\). This would find one of the local minima.
+  Initializing two optimizers for a very high value and a very low value would find the two minima found above.
+  Moreover, in the case in which conditions \eqref{eq:cond_late_min} hold,
+  it is enough to launch one optimizer for a very little value
+  This could be the best way, since it is simpler and equally effective (and potentially delegates the computation of an explicit expression for \(tt'\) to an automatic differentiation framework).
+\end{itemize}
+
+I will thus concentrate on the second point.
 
 \end{document}
 %%% Local Variables:
