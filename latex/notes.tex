@@ -54,7 +54,7 @@ Inverting \eqref{eq:ta_td} is not analytically possible a priori, and may not be
 It only depends on whether the function \(tt(t_d)\) ever grows more than the identity.
 For instance, if the travel time is a gausssian
 \begin{equation*}
-  tt(t_d) = \frac{1}{\sigma\sqrt{2\pi}}\exp\left(-{\frac{x^2}{2\sigma^2}}\right)
+  tt(t_d) = \frac{1}{\sigma\sqrt{2\pi}}\exp\left(-{\frac{t_d^2}{2\sigma^2}}\right)
 \end{equation*}
 then the arrival time is invertible if and only if the variance \(\sigma\) satisfies the condition
 \[\sigma \leq (2\pi e)^{-\frac{1}{4}} \approx 0.492 \]
@@ -67,7 +67,7 @@ Moreover, \(\alpha = 1\).
 
 \begin{equation}
   \label{eq:cost_ta}
-  C(t_a) = tt_a(t_a) + \beta[t^*-t_a]^+ + \gamma[t_a-t^*]^+ \]
+  C(t_a) = tt_a(t_a) + \beta[t^*-t_a]^+ + \gamma[t_a-t^*]^+
 \end{equation}
 
 
