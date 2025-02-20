@@ -62,7 +62,7 @@ then the arrival time is invertible if and only if the variance \(\sigma\) satis
 In general, assuming that the function grows less than the identity is pretty reasonable,
 since in real world I think leaving later results in arriving later.
 
-From now on, assume \eqref{eq:ta_td} is invertible, and \(tt_a(t_a)\) exists.
+From now on, assume \eqref{eq:ta_td} is invertible, and \(tt_a(t_a) = tt(t_d(t_a))\) exists.
 Moreover, \(\alpha = 1\).
 
 \begin{equation}
@@ -70,6 +70,42 @@ Moreover, \(\alpha = 1\).
   C(t_a) = tt_a(t_a) + \beta[t^*-t_a]^+ + \gamma[t_a-t^*]^+
 \end{equation}
 
+The cost function \eqref{eq:cost_ta} could be minimized either at the only non differentiable point (for \(t_a = t^*\))
+or at one of the points where its derivative is zero.
+\begin{equation}
+  \label{eq:cost_diff}
+  C'(t_a) =
+  \begin{cases}
+    tt_a'(t_a) -\beta \quad &\text{if } t_a < t^* \\
+    tt_a'(t_a) + \gamma \quad &\text{otherwise}
+  \end{cases}
+\end{equation}
+
+Setting it equal to zero, the minimum is realized by one of the points
+
+\begin{align*}
+  & t_a |\ tt_a'(t_a) = \beta, t_a < t^* \\
+  & t_a = t^* \\
+  & t_a |\ tt_a'(t_a) = -\gamma, t_a > t^* \\
+\end{align*}
+
+Again, let's restrict to the case in which the travel time is gaussian.
+I assume that the travel time is gaussian in function of the arrival time as well,
+and this can be justified by saying that
+\[t_a - t_d >> \max_t | tt'(t)|\]
+but \textcolor{red}{I doubt that this is an assumption that can be made}.
+Still, assume that
+\begin{equation}
+  \label{eq:travel_time_gauss}
+  tt_a(t_a) = \frac{1}{\sigma\sqrt{2\pi}}\exp\left(-{\frac{t_a^2}{2\sigma^2}}\right)
+\end{equation}
+and so
+\begin{equation}
+  \label{eq:travel_time_gauss_diff}
+  tt_a'(t_a) = -\frac{t_a}{\sigma^3\sqrt{2\pi}}\exp\left(-{\frac{t_a^2}{2\sigma^2}}\right)
+\end{equation}
+This can't be inverted analytically and the solutions to the equations above can be found numerically.
+(I hope other approaches for minimizing the cost are possible, but nothing comes to my mind right now).
 
 \end{document}
 %%% Local Variables:
