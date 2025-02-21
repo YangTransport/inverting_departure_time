@@ -20,6 +20,10 @@
 
 \begin{document}
 
+\section{Generating data}
+
+\subsection{Intro}
+
 The cost function, in function of departure time \(t_d\), is
 \begin{equation}
   \label{eq:cost_td}
@@ -34,6 +38,8 @@ where
 \item \(tt(t_d)\) is the time spent travelling if leaving at time \(t_d\)
 \item \([x]^+ = \max(0, x)\)
 \end{itemize}
+
+\subsection{Are $t_a$ and $t_d$ equivalent?}
 
 It would be helpful to express the cost function in term of the arrival time \(t_a = t_d + tt(t_d)\),
 so that the second part of the cost function would greatly simplify
@@ -50,6 +56,8 @@ Note that the travel time can be expressed in terms of the arrival time \(t_a\) 
 \eqref{eq:ta_td} is invertible:
 this is because the departure time can be easily reconstructed from the travel time and the arrival time (and viceversa).
 
+\subsubsection{When are they equivalent?}
+
 Inverting \eqref{eq:ta_td} is not analytically possible a priori, and may not be possible in general.
 It only depends on whether the function \(tt(t_d)\) ever grows more than the identity.
 For instance, if the travel time is a gausssian
@@ -64,6 +72,8 @@ since in real world I think leaving later results in arriving later.
 
 From now on, assume \eqref{eq:ta_td} is invertible, and \(tt_a(t_a) = tt(t_d(t_a))\) exists.
 Moreover, \(\alpha = 1\).
+
+\subsection{Where is the cost minimized?}
 
 \begin{equation}
   \label{eq:cost_ta}
@@ -89,6 +99,8 @@ Setting it equal to zero, the minimum is realized by one of the points
   & t_a |\ tt_a'(t_a) = -\gamma, t_a > t^* \\
 \end{align*}
 
+\subsubsection{If travel time is 1-lipschitz then we have at most 2 minima}
+
 Note that, here, assuming
 
 \begin{equation}
@@ -98,6 +110,8 @@ Note that, here, assuming
 implies that there is no time that satisfies the last condition, that means that arriving late never realises a (not even local) minimum.
 
 These assumptions are reasonable for what discussed earlier, but \textcolor{red}{this should be looked at better}.
+
+\subsubsection{Gaussian travel time}
 
 Again, let's look at the case in which the travel time is gaussian.
 I assume that the travel time is gaussian in function of the arrival time as well,
@@ -117,13 +131,16 @@ and so
 This can't be inverted analytically and the solutions to the equations above can be found numerically.
 (I hope other approaches for minimizing the cost are possible, but nothing comes to my mind right now).
 
+\subsubsection{In general, how to find the minima}
+
+
 In order to find the minimum of the function \(C(t_a)\) there are thus two possible procedures (that are actually the same one...).
 \begin{itemize}
 \item Running a root finding algorithm on the functions \(tt_a'(t_a) - \beta,\ tt_a'(t_a) + \gamma\) to find at most two local minima, to be compared to the one potentially realized by \(t^*\) to find the minimum
 \item Directly running an optimizer on the cost function \(C(t_a)\). This would find one of the local minima.
   Initializing two optimizers for a very high value and a very low value would find the two minima found above.
   Moreover, in the case in which conditions \eqref{eq:cond_late_min} hold,
-  it is enough to launch one optimizer for a very little value
+  it is enough to launch one optimizer for a very little value.
   This could be the best way, since it is simpler and equally effective (and potentially delegates the computation of an explicit expression for \(tt'\) to an automatic differentiation framework).
 \end{itemize}
 
