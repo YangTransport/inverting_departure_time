@@ -174,7 +174,7 @@ The following lemma shows that every time a potential optimum is created (when t
   Let \(t_b \in B\). Then, \(\exists \delta > 0 |\ t_a(t^*) = t_b \ \forall t^* \in [t_b, t_b + \delta)\)
 \end{lemma}
 \begin{proof}
-  Let \(t_0 = t_b + \epsilon\), such that \(tt'(t^*) > \beta\ \forall\ t^* \in (t_b, t_0)\).
+  Let \(t_0 = t_b + \epsilon\), such that \(tt'(t) > \beta\ \forall\ t \in (t_b, t_0)\).
 
   The function to be minimized will be
   \begin{equation*}
@@ -188,8 +188,7 @@ The following lemma shows that every time a potential optimum is created (when t
     C[t^*=t_0](t_0) & = tt_a(t_0) \\
     & = tt_a(t_b + \epsilon) \\
     & = tt_a(t_b) + \int_{t_b}^{t_0} tt'(t) dt \\
-    & \geq tt_a(t_b) + \epsilon\beta \\
-    & > tt_a(t_b) \\
+    & \geq tt_a(t_b) + \beta(t_0 - t_b) \\
     & = C[t^* = t_0](t_b)
   \end{align*}
 
@@ -201,7 +200,7 @@ The following lemma shows that the function can never \textit{jump back}:
 \begin{lemma}
   Let \(t_b \in B\), \(t_0 > t_b\) such that \(t_a(t_0) = t_0\).
   
-  Then, \(\nexists \delta > 0 |\ t_a(t_0 + \delta) = t_b\),
+  Then, \(\nexists t_1 > t_0 |\ t_a(t_1) = t_b\),
 \end{lemma}
 \begin{proof}
   There are two cases: either \(tt_a'(t_0) \geq \beta\) or \(tt_a'(t_0) < \beta\).
@@ -217,8 +216,6 @@ As long as the function \(tt\) is increasing, the only admissible jumps are upwa
 \subsection{Where the travel time function is decreasing}
 
 Where the function is decreasing, no new candidates for the minima are possible, since \(\beta > 0\).
-
-Let thus \(t = \hat{t}\).
 
 If \(t_a(t) = t\), then as long as the function \(tt\) is decreasing the optimal time will grow linearly.
 
