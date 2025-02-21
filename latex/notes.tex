@@ -3,6 +3,7 @@
 \usepackage[english]{babel}
 
 \usepackage{amsmath}
+\usepackage{amsthm}
 \usepackage{amssymb}
 \usepackage{mathtools}
 \usepackage{siunitx}
@@ -14,6 +15,9 @@
 \usepackage{minted}
 
 \usepackage[pdfborderstyle={/S/U/W 0}]{hyperref}
+
+\newtheorem{theorem}{Theorem}
+\newtheorem{lemma}[theorem]{Lemma}
 
 \DeclareMathOperator*{\argmax}{arg\,max}
 \DeclareMathOperator*{\argmin}{arg\,min}
@@ -43,7 +47,7 @@ where
 
 It would be helpful to express the cost function in term of the arrival time \(t_a = t_d + tt(t_d)\),
 so that the second part of the cost function would greatly simplify
-\[ \beta[t^*-t_d-tt(t_d)]^+ + \gamma[t_d+tt(t_d)-t^* = \beta[t^*-t_a]^+ + \gamma[t_a-t^*]^+ \]
+\[ \beta[t^*-t_d-tt(t_d)]^+ + \gamma[t_d+tt(t_d)-t^*]^+ = \beta[t^*-t_a]^+ + \gamma[t_a-t^*]^+ \]
 
 But how do we express the first term \(tt(t_d)\) in terms of \(t_a\)?
 
@@ -144,7 +148,82 @@ In order to find the minimum of the function \(C(t_a)\) there are thus two possi
   This could be the best way, since it is simpler and equally effective (and potentially delegates the computation of an explicit expression for \(tt'\) to an automatic differentiation framework).
 \end{itemize}
 
-I will thus concentrate on the second point.
+I will thus implement the second point.
+
+\section{Is the optimum monotonous in $t^*$?}
+
+In particular, let's again assume the travel time to be 1-Lipschitz (so that the minimum of the cost function can never be realized by \(t > t^*\)), and \(C^1(\mathbb{R})\)
+on top of going asymptotically to zero as the arrival time goes to \(\infty\) and \(-\infty\).
+
+As discussed earlier, the cost will be minimized either for a point for which \(tt_a'(t_a) = \beta\) or for \(t_a = t^*\).
+
+Consider thus the sets
+\begin{align*}
+  B & = \{t_a | tt_a'(t_a) = \beta, tt_a'' > 0\} \\
+  B_{t^*}&  = \{t_a | tt_a'(t_a) = \beta, t_a \leq t^*\}
+\end{align*}
+
+\subsection{Where the travel time function is increasing}
+
+First of all, consider the intervals in which the travel time function \(tt_a\) is increasing.
+
+Here, new potential optima can be created.
+The following lemma shows that every time a potential optimum is created (when the set \(B_{t^*} \) grows), the function will locally be constant.
+
+\begin{lemma}
+  Let \(t_b \in B\). Then, \(\exists \delta > 0 |\ t_a(t^*) = t_b \ \forall t^* \in [t_b, t_b + \delta)\)
+\end{lemma}
+\begin{proof}
+  Let \(t_0 = t_b + \epsilon\), such that \(tt'(t^*) > \beta\ \forall\ t^* \in (t_b, t_0)\).
+
+  The function to be minimized will be
+  \begin{equation*}
+    C[t^* = t_0](t_a) = tt_a(t_a) + \beta(t_0 - t_a)
+  \end{equation*}
+  and will be minimized either for \(t_a = t_0\) or for \(t_a = t_b\).
+
+  But, since the derivative is lower bounded,
+
+  \begin{align*}
+    C[t^*=t_0](t_0) & = tt_a(t_0) \\
+    & = tt_a(t_b + \epsilon) \\
+    & = tt_a(t_b) + \int_{t_b}^{t_0} tt'(t) dt \\
+    & \geq tt_a(t_b) + \epsilon\beta \\
+    & > tt_a(t_b) \\
+    & = C[t^* = t_0](t_b)
+  \end{align*}
+
+  The minimum is thus constant for each admissible value of \(\epsilon\), and such an epsilon can be chosen by continuity of the function \(tt_a'\).
+\end{proof}
+
+The following lemma shows that the function can never \textit{jump back}:
+
+\begin{lemma}
+  Let \(t_b \in B\), \(t_0 > t_b\) such that \(t_a(t_0) = t_0\).
+  
+  Then, \(\nexists \delta > 0 |\ t_a(t_0 + \delta) = t_b\),
+\end{lemma}
+\begin{proof}
+  There are two cases: either \(tt_a'(t_0) \geq \beta\) or \(tt_a'(t_0) < \beta\).
+
+  If  \(tt_a'(t_0) < \beta\), then the minimum realized  by \(t_0\) is growing slower than the minimum realized by \(t_a\): we can reduce \(t_0\), until we fall in the other case. We must fall in the other case, since \(t_b \in B\)
+
+  If \(tt_a'(t_0) \geq \beta\), it is impossible that the hypothesis \(t_a(t_0) = t_0\) is satisfied:
+  each time that \(tt_a'(t_0) \geq \beta\), for what said earlier the function is constant, and not linear.
+\end{proof}
+
+As long as the function \(tt\) is increasing, the only admissible jumps are upwards (from a constant function to the identity).
+
+\subsection{Where the travel time function is decreasing}
+
+Where the function is decreasing, no new candidates for the minima are possible, since \(\beta > 0\).
+
+Let thus \(t = \hat{t}\).
+
+If \(t_a(t) = t\), then as long as the function \(tt\) is decreasing the optimal time will grow linearly.
+
+Otherwise, if \(t_a(t) = t_b \neq t\), then the function will remain constant until \(tt_a(t) = \beta (t - t_b)\),
+and then jump and grow, again, as the identity.
 
 \end{document}
 %%% Local Variables:
