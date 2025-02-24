@@ -7,8 +7,8 @@ from scipy.stats import norm
 
 #%%
 
-def travel_time(t_a, mu=9.5, sigma=1):
-    return 1/sigma/jnp.sqrt(2*jnp.pi)*jnp.exp(-((t_a-mu)**2)/2*sigma**2)
+def travel_time(t_a, mu=9.5, sigma=.5):
+    return 1/sigma/jnp.sqrt(2*jnp.pi)*jnp.exp(-((t_a-mu)**2)/2/sigma**2)
 
 def generate_arrival(n, mu_beta=0.7, mu_gamma=1.3, mu_t=9.5, sigma=0.1, sigma_t=1, travel_time=travel_time):
     """Generate samples of departure time.
