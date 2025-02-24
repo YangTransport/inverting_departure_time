@@ -63,7 +63,7 @@ this is because the departure time can be easily reconstructed from the travel t
 \subsubsection{When are they equivalent?}
 
 Inverting \eqref{eq:ta_td} is not analytically possible a priori, and may not be possible in general.
-It only depends on whether the function \(tt(t_d)\) ever grows more than the identity.
+It only depends on whether the function \(-tt(t_d)\) ever grows more than the identity.
 For instance, if the travel time is a gausssian
 \begin{equation*}
   tt(t_d) = \frac{1}{\sigma\sqrt{2\pi}}\exp\left(-{\frac{t_d^2}{2\sigma^2}}\right)
@@ -114,6 +114,36 @@ Note that, here, assuming
 implies that there is no time that satisfies the last condition, that means that arriving late never realises a (not even local) minimum.
 
 These assumptions are reasonable for what discussed earlier, but \textcolor{red}{this should be looked at better}.
+
+\textcolor{green}{I looked at it better!} Here is the results
+
+\subsubsection{We don't need travel time to be 1-lipschitz, in general we have 3 minima}
+
+This is because we only need \(tt(t_d)\) to decrease slower than \(-x\), and this will make \(tt_a(t_a)\) never increase more than \(x\).
+
+Consider indeed
+
+\begin{align*}
+  t_a(t_d) & = t_d + tt(t_d)
+\end{align*}
+
+This yields
+\begin{equation*}
+  tt_a(t_a) = tt(t_a^{-1}(t_a))
+\end{equation*}
+differentiating,
+\begin{align*}
+  \diffp{tt_a(t_a)}{{t_a}} & = tt'(t_a^{-1}(t_a)) \diffp{t_a^{-1}(t_a)}{{t_a}} \\
+  & = tt'(t_a^{-1}(t_a)) \frac{1}{t_a'(t_a^{-1}(t_a))}
+\end{align*}
+
+But we know that \(t_a'(t_d) = 1 + tt'(t_d)\).
+
+This implies
+\begin{align*}
+  \diffp{tt_a(t_a)}{{t_a}} & = tt'(t_d) \frac{1}{1+tt'(t_d)} \\
+  & = \frac{tt'(t_d)}{1+tt'(t_d)} < 1
+\end{align*}
 
 \subsubsection{Gaussian travel time}
 
