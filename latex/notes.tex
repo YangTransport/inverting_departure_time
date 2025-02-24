@@ -18,6 +18,7 @@
 
 \newtheorem{theorem}{Theorem}
 \newtheorem{lemma}[theorem]{Lemma}
+\newtheorem{prop}{Proposition}
 
 \DeclareMathOperator*{\argmax}{arg\,max}
 \DeclareMathOperator*{\argmin}{arg\,min}
@@ -182,6 +183,8 @@ I will thus implement the second point.
 
 \section{Is the optimum monotonous in $t^*$?}
 
+\subsection{If travel time is 1-Lipschitz}
+
 In particular, let's again assume the travel time to be 1-Lipschitz (so that the minimum of the cost function can never be realized by \(t > t^*\)), and \(C^1(\mathbb{R})\)
 on top of going asymptotically to zero as the arrival time goes to \(\infty\) and \(-\infty\).
 
@@ -193,7 +196,7 @@ Consider thus the sets
   B_{t^*}&  = \{t_a | tt_a'(t_a) = \beta, t_a \leq t^*\}
 \end{align*}
 
-\subsection{Where the travel time function is increasing}
+\subsubsection{Where the travel time function is increasing}
 
 First of all, consider the intervals in which the travel time function \(tt_a\) is increasing.
 
@@ -243,7 +246,7 @@ The following lemma shows that the function can never \textit{jump back}:
 
 As long as the function \(tt\) is increasing, the only admissible jumps are upwards (from a constant function to the identity).
 
-\subsection{Where the travel time function is decreasing}
+\subsubsection{Where the travel time function is decreasing}
 
 Where the function is decreasing, no new candidates for the minima are possible, since \(\beta > 0\).
 
@@ -251,6 +254,45 @@ If \(t_a(t) = t\), then as long as the function \(tt\) is decreasing the optimal
 
 Otherwise, if \(t_a(t) = t_b \neq t\), then the function will remain constant until \(tt_a(t) = \beta (t - t_b)\),
 and then jump and grow, again, as the identity.
+
+\subsection{In general}
+
+Consider now an arbitrary travel time function \(tt_a(t_a)\).
+
+Consider the sets
+
+\begin{align*}
+  B & = \{t_a | tt_a'(t_a) = \beta, tt_a'' > 0\} \\
+  G & = \{t_a | tt_a'(t_a) = -\gamma, tt_a'' > 0\} \\
+\end{align*}
+
+The function \(t_a(t^*)\) is (locally) either equal to the identity \(t_a(t^*) = t^*\) or constant, assuming a value that is in one of the defined sets \(B, G\)
+
+\begin{prop}
+  Let \(tt_a(t_a)\) be a travel time function with only one local maximum \(\hat{t}\),
+  and let (in increasing order) \(B = \{b_1, \dots, b_n\}\), \(G = \{g_1, \dots, g_m\}\).
+
+
+  Consider the collections of intervals \(B^* = \{(b_i, f(b_i))\}_i\) and \(G^* = \{(h(g_i), g_i)\}_i\), where
+  
+  \begin{align*}
+    f(t) & = \min\{x>t | \int_t^x(tt_a(s) - tt_a(t)) ds = 0\} \\
+    h(t) & = \max\{x<t | \int_x^t(tt_a(s) + tt_a(t)) ds = 0\} \\
+  \end{align*}
+
+  If \(f(b_n) \leq g(g_1)\), then the function \(t_a(t^*)\) will be as follows:
+
+  \begin{align*}
+    t_a(t^*) = 
+    \begin{cases}
+      \min \{b_i | t^* \in (b_i, f(b_i)\} & \text{if } \exists i |\ b_i < t^* < f(b_i) \\
+      \max \{g_i | t^* \in (h(g_i), g_i\} & \text{if } \exists i |\ h(g_i) < t^* < g_i \\
+      t^* & \text{otherwise}
+    \end{cases}
+  \end{align*}
+
+  Otherwise, if \(f(b_n) > g(g_1)\), for \(f(b_n) < t^* < h(g_1)\) the function will be made by an increasing succession of constant zones.
+\end{prop}
 
 \end{document}
 %%% Local Variables:
