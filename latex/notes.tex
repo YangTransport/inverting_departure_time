@@ -360,7 +360,7 @@ We now have a complete characterization of the function \(ot\):
 We can thus see a bit better what equation \eqref{eq:likelihood_split} means, since we know where the internal minima are and when the kink actually minimizes the cost function.
 
 \begin{align}
-  \label{eq:prob_internal}
+  \label{eq:prob_kink}
   \begin{split}
     \mathbb{P}(T_a = t_a, t_a \text{ is kink min}) & = \mathbb{P}(t^* = t_a, t^* \not\in (b_i(\beta), b_e(\beta)) \cup (g_i(\gamma), g_e(\gamma))) \\
     & = \mathbb{P}(t^* = t_a)\mathbb{P}( t^* \not\in (b_i(\beta), b_e(\beta)) \cup (g_i(\gamma), g_e(\gamma))) \\
@@ -370,11 +370,30 @@ We can thus see a bit better what equation \eqref{eq:likelihood_split} means, si
 
 This is pretty straightforward, except for a problem in defining the domain of the integral.
 This could be approximated in some ways.
-I conjecture (but am actually pretty sure) that (e. g. for \(\beta\)) the function \(b_i\) is increasing, while \(b_e\) is decreasing.
-This would considerably simplify the estimation of the intervals:
-the value of \(\beta\) could indeed be increased from a value close to zero, in which \(t_a\) is covered, until when \(t_a\) is not covered anymore.
-A bisection could then be performed to precisely find the value of \(\beta\) that makes the condition not hold anymore.
 
+The following proposition shows that the intervals shrink with increasing \(\beta\) (and with decreasing \(\gamma\)), making the estimation easier.
+\begin{prop}
+  \(b_i(\beta)\) is increasing in \(\beta\), while \(b_e(\beta)\) is decreasing in \(\beta\).
+  Similarly, \(g_i\) is increasing and \(g_e\) is decreasing.
+\end{prop}
+\begin{proof}
+  This simply follow from the convexity of the function in \(t_\beta\), and from the assumption of having only one point with the given slope (that implies that in \(b_e(\beta)\) the function is concave)..
+\end{proof}
+This considerably simplifies the approximation of the integration domain:
+we indeed now have that there exist \(\beta_0(t_a), \gamma_0(t_a) \in \mathbb{R}\) such that
+\begin{align}
+  \label{eq:threshold_integration}
+  \begin{split}
+     t_a \not\in (b_i(b), b_e(b)) \iff b > \beta_0(t_a) \\
+    t_a \not\in (g_i(g), g_e(g)) \iff g > \gamma_0(t_a)
+  \end{split}
+\end{align}
+
+Since the values of \(\beta_0, \gamma_0\) can be found by bisection (this because the functions \(b_i, b_e, g_i, g_e\) can be numerically evaluated as well), by initializing \(\beta\) to \((0, 1)\), \(\gamma\) to \((0, 1000)\) (1000 is a random high number, unlikely to be lower than the maximum steepness of the travel time function), the expression in \eqref{eq:prob_kink} becomes simply
+
+\begin{equation*}
+  \mathbb{P}(T_a = t_a, t_a \text{ is kink min}) = \mathbb{P}(t^* = t_a)\int_{\beta_0(t_a)}^\infty\mathbb{P}(\beta = b)\, db\int_{\gamma_0(t_a)}^\infty\mathbb{P}(\gamma = g)\, dg
+\end{equation*}
 
 
 \end{document}
