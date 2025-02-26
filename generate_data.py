@@ -22,7 +22,9 @@ def find_td(travel_time):
     def inner_find_td(beta, gamma, t_star):
         cost_fun = cost(travel_time)
         solver = GradientDescent(fun=cost_fun, acceleration=False)
-        val, state = solver.run(0., beta, gamma, t_star)
+        lval, _ = solver.run(0., beta, gamma, t_star)
+        rval, _ = solver.run(24., beta, gamma, t_star)
+        val = jnp.where(cost_fun(rval, beta, gamma, t_star) < cost_fun(lval, beta, gamma, t_star), rval, lval)
         return jnp.where(cost_fun(val, beta, gamma, t_star) < cost_fun(t_star, beta, gamma, t_star), val, t_star)
     return vmap(inner_find_td)
 
