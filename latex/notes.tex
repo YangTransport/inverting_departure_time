@@ -294,6 +294,89 @@ The function \(t_a(t^*)\) is (locally) either equal to the identity \(t_a(t^*) =
   Otherwise, if \(f(b_n) > g(g_1)\), for \(f(b_n) < t^* < h(g_1)\) the function will be made by an increasing succession of constant zones.
 \end{prop}
 
+\section{Retrieving parameters}
+
+For retrieving the parameters from the data, we first of all need an estimate for the likelihood of the data.
+
+For this, it is probably a good idea to use the characterization of the function \(t_a(t^*)\) above.
+
+From now on,
+\begin{equation*}
+  ot(t) := t_a(t)
+\end{equation*}
+
+Let \(t_a\) be a sample of the optimal arrival time. The likelihood of the parameters will be
+\begin{equation}
+  \label{eq:likelihood_def}
+  \mathcal{L}(\mu_\beta, \mu_\gamma, \mu_t, \sigma, \sigma_t\ \vert\ T_a = t_a) =
+  \mathbb{P}(T_a = t_a \ \vert\ \mu_\beta, \mu_\gamma, \mu_t, \sigma, \sigma_t)
+\end{equation}
+
+But what is the random variable \(T_a\)?
+It takes, as parameters, mean and variances of normally distributed \(\beta, \gamma, t^*\) and represent the resulting distribution for the point \(ot(t^*)\) that minimizes the cost.
+
+Let's thus study the likelhook in \eqref{eq:likelihood_def}.
+Given a point \(t_a\), it is either an internal minimum or a kink minimum (and thus equal to \(t^*\)).
+
+The probability can thus be decomposed in
+
+\begin{equation}
+  \label{eq:likelihood_split}
+  \mathbb{P}(T_a = t_a) = \mathbb{P}(T_a = t_a, t_a \text{ is internal minimum}) +
+  \mathbb{P}(T_a = t_a, t_a \text{ is a minimum on the kink})
+\end{equation}
+
+From now on, for simplicity we suppose there is at most one point which realizes
+\[tt'(t_\beta) = \beta, tt''(t_\beta) > 0\]
+and at most one that satisfies
+\[tt'(t_\gamma) = -\gamma, tt''(t_\gamma) > 0\]
+for any choice of \(\beta\) and \(\gamma\).
+
+Let then
+\begin{align*}
+  b_i & : \beta \mapsto t_\beta \\
+  b_e & : \beta \mapsto t | tt(t) = \beta (t - t_\beta) + tt(t_\beta), t > t_\beta\\
+  g_i & : \gamma \mapsto t | tt(t) = \gamma (t_\gamma - t) + tt(t_\gamma), t < t_\gamma\\
+  g_e & : \gamma \mapsto t_\gamma
+\end{align*}
+
+Note that \(b_e\) and \(g_e\) are well defined, since if there were 2 points that satisfy the condition then our assumption of having a unique \(t_\beta\) and \(t_\gamma\) would fail.
+
+These functions are important because they define the mapping \(ot: t^* \mapsto t_a\).
+On top of the assumption already made, assume that \(g_i(\gamma) > b_e(\beta)\). \textcolor{red}{This assumption is not reaslistic and should not be made, but it's probably pretty easy to get rid of}.
+
+We now have a complete characterization of the function \(ot\):
+
+\begin{equation}
+  \label{eq:characterized_ot}
+  ot(t^*) =
+  \begin{cases}
+    b_i(\beta) & \text{if } t^* \in (b_i(\beta), b_e(\beta)) \\
+    g_e(\gamma) & \text{if } t^* \in (g_i(\gamma), g_e(\gamma)) \\
+    t^* & \text{otherwise}
+  \end{cases}
+\end{equation}
+
+We can thus see a bit better what equation \eqref{eq:likelihood_split} means, since we know where the internal minima are and when the kink actually minimizes the cost function.
+
+\begin{align}
+  \label{eq:prob_internal}
+  \begin{split}
+    \mathbb{P}(T_a = t_a, t_a \text{ is kink min}) & = \mathbb{P}(t^* = t_a, t^* \not\in (b_i(\beta), b_e(\beta)) \cup (g_i(\gamma), g_e(\gamma))) \\
+    & = \mathbb{P}(t^* = t_a)\mathbb{P}( t^* \not\in (b_i(\beta), b_e(\beta)) \cup (g_i(\gamma), g_e(\gamma))) \\
+    & = \mathbb{P}(t^* = t_a)\int_{b\in \mathbb{R} \vert t_a \not\in (b_i(b), b_e(b))}\int_{g \in \mathbb{R} \vert t_a \not\in (g_i(g), g_e(g))}\mathbb{P}(\beta = b)\mathbb{P}(\gamma = g)\, dg\, db
+  \end{split}
+\end{align}
+
+This is pretty straightforward, except for a problem in defining the domain of the integral.
+This could be approximated in some ways.
+I conjecture (but am actually pretty sure) that (e. g. for \(\beta\)) the function \(b_i\) is increasing, while \(b_e\) is decreasing.
+This would considerably simplify the estimation of the intervals:
+the value of \(\beta\) could indeed be increased from a value close to zero, in which \(t_a\) is covered, until when \(t_a\) is not covered anymore.
+A bisection could then be performed to precisely find the value of \(\beta\) that makes the condition not hold anymore.
+
+
+
 \end{document}
 %%% Local Variables:
 %%% mode: LaTeX
