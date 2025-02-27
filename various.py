@@ -2,12 +2,12 @@ from matplotlib import pyplot as plt
 from matplotlib import cm
 
 from scipy.optimize import minimize, bisect
-from scipy.stats import norm
 
 import numpy as np
 
 import jax
 from jax import vmap
+from jax.scipy.stats import norm
 import jax.numpy as jnp
 from jaxopt import GradientDescent
 from jaxopt import Bisection
@@ -99,7 +99,11 @@ def likelihood_kink(travel_time, t_a, mu_b, sigma):
         return sol
     
     b0 = find_b0(t_a, travel_time)
-    return 1 - jax.scipy.stats.norm.cdf(b0, mu_b, sigma)
+    return 1 - norm.cdf(b0, mu_b, sigma)
+
+def likelihood_internal(travel_time, t_a, mu_b, sigma):
+    travel_time_diff = jax.grad(travel_time)
+    return norm.pdf(travel_time_diff(t_a), mu_b, sigma)
     
 #%%
 
@@ -118,17 +122,21 @@ num=200
 betas, gammas, ts, t_as = generate_arrival(num, travel_time=asymm_gaussian_plateau())
 #%%
 liks = np.array([likelihood_kink(asymm_gaussian_plateau(), t_a, .7, .1) for t_a in tqdm(t_as)])
+#%%
+
+lik_int_restr = lambda t: likelihood_internal(asymm_gaussian_plateau(), t, .7, .1)
+liks_int = vmap(lik_int_restr)(t_as)
 
 #%%
 liks_restr = lambda t: likelihood_kink(asymm_gaussian_plateau(), t, .7, .1)
 start_time = time.time()
 liks_new = vmap(liks_restr)(t_as)
 total_time = time.time() - start_time
-print(f"{total_time/num} per iteration, {total_time} in total")
+print(f"{total_time/num:.3} s per iteration, {total_time:.3} s in total")
 #%%
 
 fig, axs = plt.subplots(1, 2)
-colors = cm.plasma(liks_new)
+colors = cm.plasma(liks_int)
 axs[0].scatter(np.random.normal(size=num), t_as, s=10, color=colors)
 axs[1].scatter(ts, t_as, s=10, color=colors)
 fig.show()
