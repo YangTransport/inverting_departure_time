@@ -35,27 +35,59 @@ def asymm_gaussian_plateau(sigma_l=.7, sigma_r=.2, mu=9.5, plateau_len=3):
 
 #%%
 
-beta = .7
-travel_time = asymm_gaussian_plateau()
 def likelihood_kink(travel_time, t_a, mu_b, sigma):
+    """ Finds the likelihood of a point being a kink minimum,
+    for the travel time, beta and gamma distributions determined by the parameters.
+    Beta and gamma are assumed to be normally distributed.
+    Gamma still has to be implemented
+    """
     def find_bs(beta, travel_time):
+        """ Given a travel time function and a beta value,
+        finds the interval in which the optimal arrival time is constant
+        (and there are thuss no kink minima).
+
+        Returns a couple containing initial and final points of the interval
+        """
+        
+        # A gradient descent algorithm finds the initial point
         in_obj = lambda x: travel_time(x) - beta*x
         solver = GradientDescent(fun=in_obj, acceleration=False, stepsize=1e-1, maxiter=2500, tol=1e-2)
-
         b_i, _ = solver.run(0.)
 
+        # The final point is found where the line starting from the initial point,
+        # whith slope beta, intersects the travel time function.
+        # This point is found via a bisection
+        
         fin_obj = lambda x: travel_time(x) - beta*(x - b_i) - travel_time(b_i)
+
+        # Two points where to start the bisection are computed
         step = .5
-        high = jax.lax.while_loop(lambda a: fin_obj(a) > 0, lambda a: a + step, low + step)
+        high = jax.lax.while_loop(lambda a: fin_obj(a) > 0, lambda a: a + step, b_i + step)
         low = high - step
         b_e = Bisection(fin_obj, low, high, tol=1e-2, check_bracket=False, jit=True).run().params
+
+        # The interval extremes are returned
         return (b_i, b_e)
     
     def find_b0(t_a, travel_time):
-        min = 3e-1
+        """ Given an arrival time, finds the maximal beta such that
+        the arrival time is a kink equilibrium for every value higher than the one returned.
+
+        Finds the parameter by bisection.
+        """
+
+        # A really low and a really high value are defined as starting points for the bisection
+        min = 1e-1
         max = 1-min
+
+        # The objective function, an indicator function that shows wether the parameter t_a
+        # is in the interval for a given beta, is defined
         isin = lambda x, int: jnp.where(jnp.logical_and((x > int[0]), (x < int[1])), 1, -1)
         isin_obj = lambda b: isin(t_a, find_bs(b, travel_time))
+
+        # If t_a is not in the interval for the starting points,
+        # the starting points are returned themselves.
+        # Otherwise, the bisection algorithm is run.
         is_max = isin_obj(min) == -1
         is_min = isin_obj(max) == 1
         sol = jnp.where(
