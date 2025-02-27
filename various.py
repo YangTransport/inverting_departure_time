@@ -42,18 +42,12 @@ def likelihood_kink(travel_time, t_a, mu_b, sigma):
         in_obj = lambda x: travel_time(x) - beta*x
         solver = GradientDescent(fun=in_obj, acceleration=False, stepsize=1e-1, maxiter=2500, tol=1e-2)
 
-        b_i, state = solver.run(0.)
+        b_i, _ = solver.run(0.)
 
         fin_obj = lambda x: travel_time(x) - beta*(x - b_i) - travel_time(b_i)
-        step = .1
-        low = b_i
-        high = low + step
-        # Remove jax if not using it - native implementation is quite faster (10x...)
+        step = .5
         high = jax.lax.while_loop(lambda a: fin_obj(a) > 0, lambda a: a + step, low + step)
         low = high - step
-        # while fin_obj(high) > 0:
-        #     low = high
-        #     high += step
         b_e = Bisection(fin_obj, low, high, tol=1e-2, check_bracket=False, jit=True).run().params
         return (b_i, b_e)
     
@@ -68,22 +62,9 @@ def likelihood_kink(travel_time, t_a, mu_b, sigma):
             jnp.logical_and(
                 jnp.logical_not(is_max),
                 jnp.logical_not(is_min)),
-            Bisection(isin_obj, min, max, tol=1e-2, check_bracket=False, jit=True).run().params,
+            Bisection(isin_obj, min, max, tol=1e-3, check_bracket=False, jit=True).run().params,
             jnp.where(is_max, min, max))
         return sol
-        # if isin_obj(min) == -1:
-        #     print(f"{t_a} is in the maximal interval: returned min")
-        #     return min
-        # if isin_obj(max) == 1:
-        #     print(f"{t_a} is in the minimal interval: returned max")
-        #     return max
-        # try:
-        #     sol, r = bisect(isin_obj, min, max, xtol = 1e-2, full_output=True)
-        # except Exception as e:
-        #     print(e)
-        #     print(f"\nException, for t_a = {t_a}. Intervals are {find_bs(min, travel_time)} and {find_bs(max, travel_time)}")
-        #     sol = np.nan
-        # return sol
     
     b0 = find_b0(t_a, travel_time)
     return 1 - jax.scipy.stats.norm.cdf(b0, mu_b, sigma)
@@ -99,26 +80,6 @@ ts = jnp.linspace(7, 12, n)
 plt.plot(ts, find_td(asymm_gaussian_plateau())(betas, gammas, ts), '.')
 # plt.vlines([b_i, b_e], 7, 9)
 plt.show()
-
-#%%
-
-# def log_lik_ols(beta, gamma, t_star, t_a):
-#     n = len(t_a)
-#     best = find_td(asymm_gaussian())(jnp.array([beta]), jnp.array([gamma]), jnp.array([t_star]))
-#     return -jnp.sum((best - t_a)**2)
-
-# n=200
-# _, _, _, t_a = generate_arrival(n)
-
-# obj = lambda b: -log_lik_ols(b[0], b[1], b[2], t_a)
-
-# min = minimize(obj, (1, 1, 9), method='nelder-mead')
-
-# beta, gamma, t_star = min.x
-# plt.plot(np.random.normal(size=n), t_a, '.b')
-# plt.plot(0, find_td(asymm_gaussian())(jnp.array([beta]), jnp.array([gamma]), jnp.array([t_star])), 'or')
-# plt.plot(0, np.mean(t_a), '.g')
-# plt.show()
 
 #%%
 num=200
