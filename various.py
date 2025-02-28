@@ -111,7 +111,7 @@ def likelihood(travel_time, t_a, mu_b, mu_t, sigma, sigma_t):
     # the easiest probability to compute is the probability that
     # a point is allowed to be an internal minimum for some realization of beta
     travel_time_diff = jax.grad(travel_time)
-    prob_allowed = norm.pdf(travel_time_diff(t_a), mu_b, sigma)
+    prob_allowed = norm.pdf(travel_time_diff(t_a), mu_b, sigma) * (jax.grad(travel_time_diff)(t_a) > 0)
 
     def inner_int(b):
         bs = find_bs(b)
