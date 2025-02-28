@@ -296,6 +296,8 @@ The function \(t_a(t^*)\) is (locally) either equal to the identity \(t_a(t^*) =
 
 \section{Retrieving parameters}
 
+\subsection{Intro}
+
 For retrieving the parameters from the data, we first of all need an estimate for the likelihood of the data.
 
 For this, it is probably a good idea to use the characterization of the function \(t_a(t^*)\) above.
@@ -359,11 +361,13 @@ We now have a complete characterization of the function \(ot\):
 
 We can thus see a bit better what equation \eqref{eq:likelihood_split} means, since we know where the internal minima are and when the kink actually minimizes the cost function.
 
+\subsection{Probability of the point being a kink minimum}
+
 \begin{align}
   \label{eq:prob_kink}
   \begin{split}
     \mathbb{P}(T_a = t_a, t_a \text{ is kink min}) & = \mathbb{P}(t^* = t_a, t^* \not\in (b_i(\beta), b_e(\beta)) \cup (g_i(\gamma), g_e(\gamma))) \\
-    & = \mathbb{P}(t^* = t_a)\mathbb{P}( t^* \not\in (b_i(\beta), b_e(\beta)) \cup (g_i(\gamma), g_e(\gamma))) \\
+    & = \mathbb{P}(t^* = t_a)\mathbb{P}( t_a \not\in (b_i(\beta), b_e(\beta)) \cup (g_i(\gamma), g_e(\gamma))) \\
     & = \mathbb{P}(t^* = t_a)\int_{b\in \mathbb{R} \vert t_a \not\in (b_i(b), b_e(b))}\int_{g \in \mathbb{R} \vert t_a \not\in (g_i(g), g_e(g))}\mathbb{P}(\beta = b)\mathbb{P}(\gamma = g)\, dg\, db
   \end{split}
 \end{align}
@@ -377,7 +381,7 @@ The following proposition shows that the intervals shrink with increasing \(\bet
   Similarly, \(g_i\) is increasing and \(g_e\) is decreasing.
 \end{prop}
 \begin{proof}
-  This simply follow from the convexity of the function in \(t_\beta\), and from the assumption of having only one point with the given slope (that implies that in \(b_e(\beta)\) the function is concave)..
+  This simply follow from the convexity of the function in \(t_\beta\), and from the assumption of having only one point with the given slope (that implies that in \(b_e(\beta)\) the function is concave).
 \end{proof}
 This considerably simplifies the approximation of the integration domain:
 we indeed now have that there exist \(\beta_0(t_a), \gamma_0(t_a) \in \mathbb{R}\) such that
@@ -395,6 +399,39 @@ Since the values of \(\beta_0, \gamma_0\) can be found by bisection (this becaus
   \mathbb{P}(T_a = t_a, t_a \text{ is kink min}) = \mathbb{P}(t^* = t_a)\int_{\beta_0(t_a)}^\infty\mathbb{P}(\beta = b)\, db\int_{\gamma_0(t_a)}^\infty\mathbb{P}(\gamma = g)\, dg
 \end{equation*}
 
+\subsection{Probability of the point being an internal minimum}
+
+I will thus here concentrate in the probability
+\begin{equation*}
+  \mathbb{P}(T_a = t_a, t_a \text{ is internal minimum})
+\end{equation*}
+
+This can be reformulated in
+
+\begin{equation*}
+  \mathbb{P}(T_a = t_a, t_a \text{ is the result of an internal minimum}, t^* \text{ gave birth to an internal minimum})
+\end{equation*}
+
+For giving birth to an internal minimum, \(t^*\) has to be in the interval \((b_i(\beta), b_e(\beta)\).
+
+The probability can thus be reformulated again as
+
+\begin{equation*}
+  \mathbb{P}\left(T_a = t_a, t_a = b_i(\beta), t^* \in (b_i(\beta), b_e(\beta))\right)
+\end{equation*}
+But the events are independent:
+\begin{align}
+  \label{eq:prob_internal}
+  \begin{split}
+    \mathbb{P}(T_a = t_a, t_a \text{ is internal minimum}) & = \mathbb{P}(t_a = b_i(\beta))\mathbb{P}(t^* \in (b_i(\beta), b_e(\beta))) \\
+    & = \mathbb{P}(\beta = b_i^{-1}(t_a))\int_0^1\int_{b_i(b)}^{b_e(b)} \mathbb{P}(t^* = t) dt\,\mathbb{P}(\beta = b) db \\
+    & = \mathbb{P}(\beta = tt_a'(t_a), tt_a''(t_a) > 0)\int_0^1\int_{b_i(b)}^{b_e(b)} \mathbb{P}(t^* = t) dt\,\mathbb{P}(\beta = b) db 
+  \end{split}
+\end{align}
+
+The last equation follows from the fact that computing the inverse of \(b_i\) is exactly just looking at the steepness of the travel time function, where the travel time function is convex.
+
+All of this can, again, be approximated computationally.
 
 \end{document}
 %%% Local Variables:
