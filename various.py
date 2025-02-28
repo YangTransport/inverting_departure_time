@@ -123,7 +123,6 @@ def likelihood(travel_time, t_a, mu_b, mu_t, sigma, sigma_t):
     int_result = trapezoid(fx, x)
 
     likelihood_internal = int_result * prob_allowed
-
     return likelihood_kink + likelihood_internal
 
 def total_liks(travel_time, t_as):
@@ -156,19 +155,23 @@ lik_fun = jit(lambda mus: -total_log_lik(asymm_gaussian_plateau(), t_as)(mus[0],
 
 #%%
 
-res = minimize(lik_fun, (10, 10, .5, .5), method="Nelder-Mead")
+res = minimize(lik_fun, (.2, 7, .5, .5), method="Nelder-Mead")
 print(res.x)
 #%%
 
 solver = GradientDescent(lik_fun, verbose=True)
-init = (10., 10., .5, .5)
+init = (1., 10., .5, .5)
 val, state = solver.run(init)
 print("finished optimizing")
 print(val)
 #%%
-
-tot_liks = vmap(lambda t: likelihood_kink(asymm_gaussian_plateau(), t, .7, 9.5, .1, 1.) + likelihood_internal(asymm_gaussian_plateau(), t, .7, 9.5, .1, 1.))
-liks = tot_liks(t_as)
+x = jnp.linspace(6, 13, 1000)
+liks_x = total_liks(asymm_gaussian_plateau(), x)(.7, 9.5, .1, 1)
+#%%
+h = 120
+plt.hist(t_as, 80)
+plt.fill_between(x, liks_x*h, alpha=.3, color="red")
+plt.show()
 #%%
 
 liks = total_liks(asymm_gaussian_plateau(), t_as)(.7, 9.5, .1, 1.)
