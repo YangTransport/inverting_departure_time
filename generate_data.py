@@ -4,9 +4,6 @@ from jaxopt import GradientDescent
 from scipy.stats import truncnorm
 from scipy.stats import norm
 
-def travel_time(t_a, mu=9.5, sigma=.2):
-    return 1/sigma/jnp.sqrt(2*jnp.pi)*jnp.exp(-((t_a-mu)**2)/2/sigma**2)
-
 def cost(travel_time):
     def inner_cost(t_a, beta, gamma, t_star):
         return travel_time(t_a) + beta * jnp.maximum(0, t_star - t_a) + gamma * jnp.maximum(0, t_a - t_star) 
@@ -28,7 +25,7 @@ def find_td(travel_time):
         return jnp.where(cost_fun(val, beta, gamma, t_star) < cost_fun(t_star, beta, gamma, t_star), val, t_star)
     return vmap(inner_find_td)
 
-def generate_arrival(n, mu_beta=0.7, mu_gamma=1.2, mu_t=9.5, sigma=0.1, sigma_t=1, travel_time=travel_time):
+def generate_arrival(n, travel_time, mu_beta=0.7, mu_gamma=1.2, mu_t=9.5, sigma=0.1, sigma_t=1):
     """Generate samples of departure time.
 
     Arguments:
