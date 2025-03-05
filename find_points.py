@@ -70,7 +70,7 @@ def find_gs(gamma, travel_time):
     
     # A gradient descent algorithm finds the final point
     fin_obj = lambda x: travel_time(x) + gamma*x
-    solver = GradientDescent(fun=fin_obj, acceleration=False, stepsize=1e-1, maxiter=2500)
+    solver = GradientDescent(fun=fin_obj, acceleration=False, stepsize=1e-2, maxiter=2500)
     g_e, _ = solver.run(24.)
 
     # The initial point is found where the line starting from the
