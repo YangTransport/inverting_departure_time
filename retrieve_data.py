@@ -9,7 +9,7 @@ def likelihood(travel_time, t_a, mu_b, mu_g, mu_t, sigma, sigma_t):
     """Finds the likelihood of a point realizing a minimum, for the
     travel time, beta, gamma and t* distributions determined by the
     parameters.  Beta, gamma and t* are assumed to be normally
-    distributed.  Gamma still has to be implemented
+    distributed.
 
     """
 
