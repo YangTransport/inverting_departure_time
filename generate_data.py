@@ -1,7 +1,5 @@
 import jax.numpy as jnp
-from jax import jit
-from jax import vmap
-import jax
+from jax import vmap, jit
 from jaxopt import GradientDescent
 from scipy.stats import truncnorm
 from scipy.stats import norm
@@ -12,9 +10,8 @@ def travel_time(t_a, mu=9.5, sigma=.2):
 def cost(travel_time):
     def inner_cost(t_a, beta, gamma, t_star):
         return travel_time(t_a) + beta * jnp.maximum(0, t_star - t_a) + gamma * jnp.maximum(0, t_a - t_star) 
-    return jit(inner_cost)
+    return inner_cost
 
-# A gradient descent optimizer finds the left minimum (if there is one)                                  
 
 def find_td(travel_time):
     """Given a travel time, returns a function that, given vectors of

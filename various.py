@@ -19,8 +19,13 @@ from retrieve_data import likelihood, total_log_lik, total_liks
 import numpy as np
 #%%
 num=1000
-betas, gammas, ts, t_as = generate_arrival(num, travel_time=asymm_gaussian_plateau())#, mu_gamma=1.3)
-lik_fun = jit(lambda mus: -total_log_lik(asymm_gaussian_plateau(), t_as)(mus[0], mus[1], mus[2], mus[3], mus[4]))
+betas, gammas, ts, t_as = generate_arrival(num, travel_time=asymm_gaussian_plateau(), mu_gamma=2.5)
+
+@jit
+def lik_fun(par):
+    mu_b, mu_g, mu_t, sigma, sigma_t = par
+    log_lik = total_log_lik(asymm_gaussian_plateau(), t_as)(mu_b, mu_g, mu_t, sigma, sigma_t)
+    return -log_lik
 
 #%%
 start_time = time.time()

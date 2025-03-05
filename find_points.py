@@ -25,7 +25,7 @@ def find_bs(beta, travel_time):
     step = .5
     high = while_loop(lambda a: fin_obj(a) > 0, lambda a: a + step, b_i + step)
     low = high - step
-    b_e = Bisection(fin_obj, low, high, check_bracket=False, jit=True).run().params
+    b_e = Bisection(fin_obj, low, high, check_bracket=False).run().params
 
     # The interval extremes are returned
     return (b_i, b_e)
@@ -55,7 +55,7 @@ def find_b0(t_a, travel_time):
         jnp.logical_and(
             jnp.logical_not(is_max),
             jnp.logical_not(is_min)),
-        Bisection(isin_obj, min, max, check_bracket=False, jit=True).run().params,
+        Bisection(isin_obj, min, max, check_bracket=False).run().params,
         jnp.where(is_max, min, max))
     return sol
 
@@ -84,7 +84,7 @@ def find_gs(gamma, travel_time):
     step = .5
     low = while_loop(lambda a: fin_obj(a) > 0, lambda a: a - step, g_e - step)
     high = low + step
-    g_i = Bisection(fin_obj, low, high, check_bracket=False, jit=True).run().params
+    g_i = Bisection(fin_obj, low, high, check_bracket=False).run().params
 
     # The interval extremes are returned
     return (g_i, g_e)
@@ -118,6 +118,6 @@ def find_g0(t_a, travel_time):
         jnp.logical_and(
             jnp.logical_not(is_max),
             jnp.logical_not(is_min)),
-        Bisection(isin_obj, min, max, check_bracket=False, jit=True).run().params,
+        Bisection(isin_obj, min, max, check_bracket=False).run().params,
         jnp.where(is_max, min, max))
     return sol
