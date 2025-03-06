@@ -19,15 +19,34 @@ from retrieve_data import likelihood, total_log_lik, total_liks
 import numpy as np
 #%%
 num=1000
-betas, gammas, ts, t_as = generate_arrival(num, travel_time=asymm_gaussian_plateau(), mu_gamma=1.3)
+par = (.3, 2.4, 10, .2, 1)
+betas, gammas, ts, t_as = generate_arrival(num, asymm_gaussian_plateau(), *par)
 
 @jit
 def lik_fun(par):
-    mu_b, mu_g, mu_t, sigma, sigma_t = par
-    log_lik = total_log_lik(asymm_gaussian_plateau(), t_as)(mu_b, mu_g, mu_t, sigma, sigma_t)
+    log_lik = total_log_lik(asymm_gaussian_plateau(), t_as)(*par)
     return -log_lik
-
 #%%
+
+def obj_fun(par):
+    print(("{:8.4f}"*5).format(*par))
+    return lik_fun(par)
+#%%
+g_betas = jnp.linspace(.01, .9, 5)
+g_gammas = jnp.linspace(1, 4, 5)
+g_ts = jnp.linspace(6, 11, 3)
+g_sigmas = jnp.linspace(.1, .5, 5)
+g_sigmats = jnp.linspace(1, 4, 3)
+
+vec_lik = jit(vmap(vmap(vmap(vmap(vmap(total_log_lik(asymm_gaussian_plateau(), t_as), (None, None, None, None, 0)), (None, None, None, 0, None)), (None, None, 0, None, None)), (None, 0, None, None, None)), (0, None, None, None, None)))
+
+grid_result = vec_lik(g_betas, g_gammas, g_ts, g_sigmas, g_sigmats)
+best = jnp.array(jnp.unravel_index(grid_result.argmax(), grid_result.shape))
+init = jnp.array([g_betas[best[0]], g_gammas[best[1]], g_ts[best[2]], g_sigmas[best[3]], g_sigmats[best[4]]])
+
+print("Initial values are")
+print(init)
+
 start_time = time.time()
 res = minimize(lik_fun, (.9, 2., 10., .5, .5), method="Nelder-Mead")
 print(res.x)
@@ -45,11 +64,11 @@ x = jnp.linspace(6, 12, 500)
 liks_x = total_liks(asymm_gaussian_plateau(), x)(.7, 1.3, 9.5, .1, 1.)
 #%%
 h = 120
-plt.hist(t_as, 200)
+plt.hist(t_as, 80)
 plt.fill_between(x, liks_x*h, alpha=.3, color="red")
 plt.show()
 #%%
-liks = total_liks(asymm_gaussian_plateau(), t_as)(.7, 1.3, 9.5, .1, 1.)
+liks = total_liks(asymm_gaussian_plateau(), t_as)(*par)
 
 #%%
 fig, axs = plt.subplots(1, 2)
