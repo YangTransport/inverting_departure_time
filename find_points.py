@@ -1,6 +1,7 @@
 from jaxopt import GradientDescent, Bisection
 import jax.numpy as jnp
 from jax.lax import while_loop
+from utils import steps
 
 def find_bs(beta, travel_time):
     """ Given a travel time function and a beta value,
@@ -11,8 +12,9 @@ def find_bs(beta, travel_time):
     """
     
     # A gradient descent algorithm finds the initial point
+    stepsize = steps()
     in_obj = lambda x: travel_time(x) - beta*x
-    solver = GradientDescent(fun=in_obj, acceleration=False, stepsize=1e-1, maxiter=2500)
+    solver = GradientDescent(fun=in_obj, acceleration=False, stepsize=stepsize)
     b_i, _ = solver.run(0.)
 
     # The final point is found where the line starting from the initial point,
@@ -69,8 +71,9 @@ def find_gs(gamma, travel_time):
     """
     
     # A gradient descent algorithm finds the final point
+    stepsize = steps()
     fin_obj = lambda x: travel_time(x) + gamma*x
-    solver = GradientDescent(fun=fin_obj, acceleration=False, stepsize=1e-2, maxiter=2500)
+    solver = GradientDescent(fun=fin_obj, acceleration=False, stepsize=stepsize, maxiter=2500)
     g_e, _ = solver.run(24.)
 
     # The initial point is found where the line starting from the
