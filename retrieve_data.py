@@ -56,10 +56,17 @@ def likelihood(travel_time, t_a, mu_b, mu_g, mu_t, sigma, sigma_t):
     int_result_b = trapezoid(fx_b, x_b)
 
     min_g = 1
-    max_g = 15
+    
+    # For computing the maximum possible value of gamma, the maximum
+    # value of the gradient of the travel time is computed. This
+    # computation can be done only once and delegated to a more
+    # articulated travel_time class. This is an improvement to be
+    # done.
+    x = jnp.linspace(0, 24, 1000)
+    max_g = -jnp.min(vmap(travel_time_diff)(x)) - 1e-1
     x_g = jnp.linspace(min_g, max_g, points)
     fx_g = vmap(inner_int_g)(x_g)
-    int_result_g = trapezoid(fx_g, x_g)
+    int_result_g = trapezoid(fx_g, x_g, axis=0)
     likelihood_internal = int_result_b * prob_allowed_b + int_result_g * prob_allowed_g
     return likelihood_kink + likelihood_internal
 

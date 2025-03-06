@@ -11,8 +11,11 @@ def find_bs(beta, travel_time):
     Returns a couple containing initial and final points of the interval
     """
     
-    # A gradient descent algorithm finds the initial point
-    stepsize = steps()
+    # A gradient descent algorithm finds the initial point. The step
+    # size is chosen to be inversely proportional to the value of beta
+    # because the function will become shallower the lower the beta
+    # is.
+    stepsize = lambda n: steps()(n)/beta
     in_obj = lambda x: travel_time(x) - beta*x
     solver = GradientDescent(fun=in_obj, acceleration=False, stepsize=stepsize)
     b_i, _ = solver.run(0.)
@@ -63,18 +66,23 @@ def find_b0(t_a, travel_time):
 
 
 def find_gs(gamma, travel_time):
-    """ Given a travel time function and a gamma value,
+    """Given a travel time function and a gamma value,
     finds the interval in which the optimal arrival time is constant
     (and there are thus no kink minima).
 
-    Returns a couple containing initial and final points of the interval
+    Returns a couple containing initial and final points of the interval.
+
+    NOTE: This function's result will be meaningless if called on
+    values of gamma greatest than the minimum steep of the travel time
+    function. Don't do that
+
     """
     
     # A gradient descent algorithm finds the final point
-    stepsize = steps()
+    stepsize = lambda n: steps()(n)/gamma
     fin_obj = lambda x: travel_time(x) + gamma*x
-    solver = GradientDescent(fun=fin_obj, acceleration=False, stepsize=stepsize, maxiter=2500)
-    g_e, _ = solver.run(24.)
+    solver = GradientDescent(fun=fin_obj, acceleration=False, stepsize=stepsize)
+    g_e, state = solver.run(24.)
 
     # The initial point is found where the line starting from the
     # final point, whith slope -gamma, crosses the travel time
