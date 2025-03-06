@@ -39,7 +39,7 @@ def find_b0(t_a, travel_time):
 
     # A really low and a really high value are defined as starting points for the bisection
     min = 1e-1
-    max = 1-min
+    max = 1
 
     # The objective function, an indicator function that shows wether the parameter t_a
     # is in the interval for a given beta, is defined
