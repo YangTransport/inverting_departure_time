@@ -181,6 +181,8 @@ In order to find the minimum of the function \(C(t_a)\) there are thus two possi
 
 I will thus implement the second point.
 
+\textcolor{blue}{The second point is not working too well due to (appearently) some problems with jaxopt.GradientDescent. Maybe implementing the first one is actually not a bad idea.}
+
 \section{Is the optimum monotonous in $t^*$?}
 
 \subsection{If travel time is 1-Lipschitz}
@@ -294,6 +296,234 @@ The function \(t_a(t^*)\) is (locally) either equal to the identity \(t_a(t^*) =
   Otherwise, if \(f(b_n) > g(g_1)\), for \(f(b_n) < t^* < h(g_1)\) the function will be made by an increasing succession of constant zones.
 \end{prop}
 
+\section{Retrieving parameters}
+
+\subsection{Intro}
+
+For retrieving the parameters from the data, I will try to define a function that,
+given the distribution of the parameters, estimates the likelihood of each point.
+
+For this, it is probably a good idea to use the characterization of the function \(t_a(t^*)\) above.
+
+From now on,
+\begin{equation*}
+  ot(t) := t_a(t)
+\end{equation*}
+
+Let \(t_a\) be a sample of the optimal arrival time. The likelihood of the parameters will be
+\begin{equation}
+  \label{eq:likelihood_def}
+  \mathcal{L}(\mu_\beta, \mu_\gamma, \mu_t, \sigma, \sigma_t\ \vert\ T_a = t_a) =
+  f_{T_a; \mu_\beta, \mu_\gamma, \mu_t, \sigma, \sigma_t}(t_a)
+\end{equation}
+
+The random variable \(T_a\) is the core of the method: it takes, as parameters, mean and variances of normally distributed \(\beta, \gamma, t^*\) and represent the resulting distribution for the point \(ot(t^*)\) that minimizes the cost.
+\(f_{T_a; \theta}\) is its probability density function, given the parameters \(\theta\).
+
+Let's thus study the likelhook in \eqref{eq:likelihood_def}.
+Given a point \(t_a\), it is either an internal minimum or a kink minimum (and thus equal to \(t^*\)).
+
+Hence, let \(Q\) be a binary random variable, defined so that \(Q=1\) if a point is an internal minimum, \(Q=0\) otherwise.
+
+The pdf can be decomposed in
+
+\begin{equation}
+  \label{eq:likelihood_split}
+  f_{T_a}(t_a) = f_{T_a | Q}(t_a | 0)\mathbb{P}(Q = 0) + f_{T_a | Q}(t_a | 1)\mathbb{P}(Q = 1)
+\end{equation}
+
+From now on, for simplicity we suppose there is at most one point which realizes
+\[tt'(t_\beta) = \beta, tt''(t_\beta) > 0\]
+and at most one that satisfies
+\[tt'(t_\gamma) = -\gamma, tt''(t_\gamma) > 0\]
+for any choice of \(\beta\) and \(\gamma\).
+
+Let then
+\begin{align*}
+  b_i & : \beta \mapsto t_\beta \\
+  b_e & : \beta \mapsto t | tt(t) = \beta (t - t_\beta) + tt(t_\beta), t > t_\beta\\
+  g_i & : \gamma \mapsto t | tt(t) = \gamma (t_\gamma - t) + tt(t_\gamma), t < t_\gamma\\
+  g_e & : \gamma \mapsto t_\gamma
+\end{align*}
+
+Note that \(b_e\) and \(g_e\) are well defined, since if there were 2 points that satisfy the condition then our assumption of having a unique \(t_\beta\) and \(t_\gamma\) would fail.
+
+These functions are important because they define the mapping \(ot: t^* \mapsto t_a\).
+On top of the assumption already made, assume that \(g_i(\gamma) > b_e(\beta)\). \textcolor{red}{This assumption is not reaslistic and should not be made, but it's probably pretty easy to get rid of}.
+
+We now have a complete characterization of the function \(ot\):
+
+\begin{equation}
+  \label{eq:characterized_ot}
+  ot(t^*) =
+  \begin{cases}
+    b_i(\beta) & \text{if } t^* \in (b_i(\beta), b_e(\beta)) \\
+    g_e(\gamma) & \text{if } t^* \in (g_i(\gamma), g_e(\gamma)) \\
+    t^* & \text{otherwise}
+  \end{cases}
+\end{equation}
+
+We can thus see a bit better what equation \eqref{eq:likelihood_split} means, since we know where the internal minima are and where the kink actually minimizes the cost function.
+
+\subsection{Probability of the point being a kink minimum}
+
+The event \textit{being a kink minimum} can thus be decomposed in \textit{being a realization of the random variable \(T^*\)} and \textit{not being into an interval that would yield an internal minimum}.
+
+These events are independent, since \(T^*\) is independent from the variables \(\gamma\) and \(\beta\) that decide the intervals.
+
+The pdf for the variable \(K\) will thus be
+
+\begin{equation}
+  \label{eq:prob_kink}
+    f_{T_a | Q}(t_a | 0) = \frac{f_{T^*}(t_a)\mathbb{P}( t_a \not\in (b_i(\beta), b_e(\beta)) \cup (g_i(\gamma), g_e(\gamma)))}{\int_{-\infty}^\infty f_{T^*}(t_a)\mathbb{P}( t_a \not\in (b_i(\beta), b_e(\beta)) \cup (g_i(\gamma), g_e(\gamma)))dt_a}
+  \end{equation}
+ where the denominator is nothing but a normalization constant, found by integrating the numerator over all the domain of \(t_a\).
+
+\(f_{T^*}(t_a)\) is known, since the distribution of the variable \(T^*\) is known.
+
+For the probability of not being in the interval, on the other hand, we have 
+
+\begin{equation*}
+  \mathbb{P}( t_a \not\in (b_i(\beta), b_e(\beta)) \cup (g_i(\gamma), g_e(\gamma)))dt_a = \int_{b\in \mathbb{R} \vert t_a \not\in (b_i(b), b_e(b))}\int_{g \in \mathbb{R} \vert t_a \not\in (g_i(g), g_e(g))}f_\beta(b)f_\gamma(g)\, dg\, db
+\end{equation*}
+
+This is pretty straightforward, except for a problem in defining the domain of the integral, which will be numerically estimated.
+
+The following proposition shows that the intervals shrink with increasing \(\beta\) (and with decreasing \(\gamma\)), making the estimation of the domain
+\begin{prop}
+  \(b_i(\beta)\) is increasing in \(\beta\), while \(b_e(\beta)\) is decreasing in \(\beta\).
+  Similarly, \(g_i\) is increasing and \(g_e\) is decreasing.
+\end{prop}
+\begin{proof}
+  This simply follows from the convexity of the function in \(t_\beta, t_\gamma\), and from the assumption of having only one point with the given slope (that implies that in \(b_e(\beta), g_i(\gamma)\) the function is concave).
+\end{proof}
+This considerably simplifies the approximation of the integration domain:
+we indeed now have that there exist \(\beta_0(t_a), \gamma_0(t_a) \in \mathbb{R}\) such that
+\begin{align}
+  \label{eq:threshold_integration}
+  \begin{split}
+     t_a \not\in (b_i(b), b_e(b)) \iff b > \beta_0(t_a) \\
+    t_a \not\in (g_i(g), g_e(g)) \iff g > \gamma_0(t_a)
+  \end{split}
+\end{align}
+
+Let thus
+\begin{align*}
+  \beta_\text{max} & = \max_x{tt'(x)} \\
+  \gamma_\text{max} & = \max_x{-tt'(x)} \\
+\end{align*}
+
+Since the values of \(\beta_0, \gamma_0\) can be found by bisection (this because the functions \(b_i, b_e, g_i, g_e\) can be numerically evaluated as well), by initializing \(\beta\) to \((0, \beta_\text{max})\), \(\gamma\) to \((1, \gamma_\text{max})\), the expression in \eqref{eq:prob_kink} becomes
+
+\begin{align*}
+  f_{T_a | Q}(t_a | 0) & = \frac{f_{T^*}(t_a)\int_{\beta_0(t_a)}^\infty f_\beta(b)\, db\int_{\gamma_0(t_a)}^\infty f_\gamma(g)\, dg}{\int_{-\infty}^\infty f_{T^*}(t_a)\int_{\beta_0(t_a)}^\infty f_\beta(b)\, db\int_{\gamma_0(t_a)}^\infty f_\gamma(g)\, dgdt_a} \\
+  & = \frac{f_{T^*}(t_a)\int_{\beta_0(t_a)}^{\beta_\text{max}}f_\beta(b)\, db\int_{\gamma_0(t_a)}^{\gamma_\text{max}}f_\gamma(g)\, dg}{\int_{-\infty}^\infty f_{T^*}(t_a)\int_{\beta_0(t_a)}^{\beta_\text{max}}f_\beta(b)\, db\int_{\gamma_0(t_a)}^{\gamma_\text{max}}f_\gamma(g)\, dgdt_a}
+\end{align*}
+
+Note that the coefficients \(\beta_\text{max}\), \(\gamma_\text{max}\) depend only on the travel time function and can be computed only once per travel time function.
+
+Moreover, the denominator is exactly \(\mathbb{P}(Q = 0)\).
+It will thus simplify in \eqref{eq:likelihood_split}
+
+\subsection{Probability of the point being an internal minimum}
+
+I will thus here concentrate on the function \(f_I(t_a) = f_{T_a | Q}(t_a | 1)\).
+
+Again, the probability density function can be split in 2 parts:
+one regarding the \textit{early} minima and one regarding the \textit{late} minima.
+
+Let's thus define again a binary random variable \(L\), where \(L=1\) for the event \textit{arriving late}, \(L=0\) for \textit{arriving early}.
+
+\begin{equation}
+  \label{eq:internal_split}
+  f_I(t_a) = f_{I | L}(t_a | 0) \mathbb{P}(L=0 | Q=1) + f_{I | L}(t_a | 1) \mathbb{P}(L=1 | Q=1)
+\end{equation}
+
+\(f_{I | L}(t_a | 0)\) is the distribution arising from applying the transformation \(b_i\) to a variable distributed as \(\beta\) (similarly for \(\gamma\)).
+
+We have
+\begin{align}
+  \label{eq:pdf_bi}
+  \begin{split}
+    \beta & \sim \mathcal{N}(\mu_\beta, \sigma_\beta) \\[1em]
+    f_{I | L}(t_a | 0) & = \text{pdf}(b_i(\beta))(t_a) \\
+    & = f_\beta(b_i^{-1}(t_a))\diff{b_i^{-1}}{t_a}(t_a)
+  \end{split}
+\end{align}
+
+Note now that computing the inverse of \(b_i\) is exactly just looking at the steepness of the travel time function, where the travel time function is convex.
+
+The probability density function becomes thus
+
+\begin{equation}
+  \label{eq:pdf_early}
+  f_{I | L}(t_a | 0) = f_\beta(tt_a'(t_a))[tt_a''(t_a)]^+
+\end{equation}
+and, analogously,
+
+\begin{equation}
+  \label{eq:pdf_late}
+  f_{I | L}(t_a | 1) = f_\gamma(-tt_a'(t_a))[tt_a''(t_a)]^+
+\end{equation}
+
+The only thing that is left is now to compute the probabilities \(\mathbb{P}(L=1 | Q=1)\), \(\mathbb{P}(L=0 | Q=1)\).
+
+As it turns out, it is easier to just compute the joint probability \(\mathbb{P}(L, Q\) instead of the conditional one, and the conditional one will then be simplified when substituting in \eqref{eq:likelihood_split}.
+
+The probability \(\mathbb{P}(L=0, Q=1)\) will be exactly the probability that \(t^*\) is in the interval \((b_i(b), b_e(b))\), for some realization of the variable \(\beta\ b\).
+
+It will thus be sufficient to integrate twice the pdf:
+
+\begin{align}
+  \label{eq:prob_int_beta}
+  \begin{split}
+    \mathbb{P}(L=0, Q=1) & =\mathbb{P}(t^* \in (b_i(\beta), b_e(\beta))) \\
+    & = \int_0^{\beta_\text{max}}\int_{b_i(b)}^{b_e(b)} f_{T^*}(t)dtf_\beta(b)db
+      \end{split}
+\end{align}
+
+and similarly for \(\gamma\),
+\begin{equation}
+  \label{eq:prob_in_gamma}
+  \mathbb{P}(L=1, Q=1) = \int_1^{\gamma_\text{max}}\int_{g_i(g)}^{g_e(g)} f_{T^*}(t)dtf_\gamma(g)dg
+\end{equation}
+
+\section{Some results}
+
+The likelihood function still has to be improved as it is not always extremely precise. Moreover the handling of large dataset (not really large, more than 1000 samples) has to be fixed.
+
+Still, with small dataset we manage to have pretty good results.
+
+\begin{figure}
+  \centering
+  \includegraphics[width=.8\textwidth]{img/contour_mus.png}
+  \caption{Contour plots of the likelihood versus means, for initial parameters 0.7, 1.3, 9.5, 0.1, 1 (that are considered easy, non problematic parameters). The red dot shows the parameters that generated the data, the green one the ones retrieved by the optimizer.}
+  \label{fig:easy_par}
+\end{figure}
+
+
+\begin{figure}
+  \centering
+  \includegraphics[width=.8\textwidth]{img/contour_mus_not_converging.png}
+  \caption{Contour plots of the likelihood versus means, for initial parameters 0.6, 2.4, 10, 0.2, 1 (that are considered not easy, quite problematic parameters). The red dot shows the parameters that generated the data, the green one the ones retrieved by the optimizer.}
+  \label{fig:diff_par}
+\end{figure}
+
+
+Figure~\ref{fig:easy_par} shows how the likelihood looks like plotted against the means of the parameters \(\beta\), \(\gamma\), and how the optimizer converges for easy parameters.
+Figure \autoref{fig:diff_par} shows the same for more difficult parameters.
+
+In both cases the sample size is 200 data points, and the plot is done fixing the other parameters (tha variances and the mean of \(t^*\)) to the original values, with which the data have been generated.
+
+\begin{figure}
+  \centering
+  \includegraphics[width=.8\textwidth]{img/likelihood_over_ta}
+  \caption{Plot of where the data actually are (in blue), versus where the data are forcasted to be knowing the actual parameters (in red). The sample size is 200 data points, and the parameters are, as earlier, 0.6, 2.4, 10, 0.2, 1}
+  \label{fig:likelihood_over_tas}
+\end{figure}
+
+Lastly, figure~\autoref{fig:likelihood_over_tas} shows where, knowing the parameters but ithout knowing the data, the data are forcasted to be.
+As can be seen, there is room for improvements in the location of the left spike. This is due to an error in estimating an integral that can be fixed.
 \end{document}
 %%% Local Variables:
 %%% mode: LaTeX
