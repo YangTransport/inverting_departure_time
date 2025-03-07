@@ -323,14 +323,13 @@ It takes, as parameters, mean and variances of normally distributed \(\beta, \ga
 Let's thus study the likelhook in \eqref{eq:likelihood_def}.
 Given a point \(t_a\), it is either an internal minimum or a kink minimum (and thus equal to \(t^*\)).
 
-Let thus \(I\) be a random variable which describes the distribution of internal minima,
-\(K\) a random variable which describes the distribution of kink minima.
+Hence, let \(Q\) be a binary random variable, defined so that \(Q=1\) if a point is an internal minimum, \(Q=0\) otherwise.
 
 The pdf can be decomposed in
 
 \begin{equation}
   \label{eq:likelihood_split}
-  f_{T_a}(t_a) = \frac{f_I(t_a) + f_K(t_a)}{2}
+  f_{T_a}(t_a) = f_{T_a | Q}(t_a | 0)\mathbb{P}(Q = 0) + f_{T_a | Q}(t_a | 1)\mathbb{P}(Q = 1)
 \end{equation}
 
 From now on, for simplicity we suppose there is at most one point which realizes
