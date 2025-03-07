@@ -432,37 +432,66 @@ It will thus simplify in \eqref{eq:likelihood_split}, and the only reason to cal
 
 \subsection{Probability of the point being an internal minimum}
 
-I will thus here concentrate in the probability
-\begin{equation*}
-  \mathbb{P}(T_a = t_a, t_a \text{ is internal minimum})
-\end{equation*}
+I will thus here concentrate on the function \(f_I(t_a) = f_{T_a | Q}(t_a | 1)\).
 
-This can be reformulated in
+Again, the probability density function can be split in 2 parts:
+one regarding the \textit{early} minima and one regarding the \textit{late} minima.
 
-\begin{equation*}
-  \mathbb{P}(T_a = t_a, t_a \text{ is the result of an internal minimum}, t^* \text{ gave birth to an internal minimum})
-\end{equation*}
+Let's thus define again a binary random variable \(L\), where \(L=1\) for the event \textit{arriving late}, \(L=0\) for \textit{arriving early}.
 
-For giving birth to an internal minimum, \(t^*\) has to be in the interval \((b_i(\beta), b_e(\beta)\).
+\begin{equation}
+  \label{eq:internal_split}
+  f_I(t_a) = f_{I | L}(t_a | 0) \mathbb{P}(L=0 | Q=1) + f_{I | L}(t_a | 1) \mathbb{P}(L=1 | Q=1)
+\end{equation}
 
-The probability can thus be reformulated again as
+\(f_{I | L}(t_a | 0)\) is the distribution arising from applying the transformation \(b_i\) to a variable distributed as \(\beta\) (similarly for \(\gamma\)).
 
-\begin{equation*}
-  \mathbb{P}\left(T_a = t_a, t_a = b_i(\beta), t^* \in (b_i(\beta), b_e(\beta))\right)
-\end{equation*}
-But the events are independent:
+We have
 \begin{align}
-  \label{eq:prob_internal}
+  \label{eq:pdf_bi}
   \begin{split}
-    \mathbb{P}(T_a = t_a, t_a \text{ is internal minimum}) & = \mathbb{P}(t_a = b_i(\beta))\mathbb{P}(t^* \in (b_i(\beta), b_e(\beta))) \\
-    & = \mathbb{P}(\beta = b_i^{-1}(t_a))\int_0^1\int_{b_i(b)}^{b_e(b)} \mathbb{P}(t^* = t) dt\,\mathbb{P}(\beta = b) db \\
-    & = \mathbb{P}(\beta = tt_a'(t_a), tt_a''(t_a) > 0)\int_0^1\int_{b_i(b)}^{b_e(b)} \mathbb{P}(t^* = t) dt\,\mathbb{P}(\beta = b) db 
+    \beta & \sim \mathcal{N}(\mu_\beta, \sigma_\beta) \\[1em]
+    f_{I | L}(t_a | 0) & = \text{pdf}(b_i(\beta))(t_a) \\
+    & = f_\beta(b_i^{-1}(t_a))\diff{b_i^{-1}}{t_a}(t_a)
   \end{split}
 \end{align}
 
-The last equation follows from the fact that computing the inverse of \(b_i\) is exactly just looking at the steepness of the travel time function, where the travel time function is convex.
+Note now that computing the inverse of \(b_i\) is exactly just looking at the steepness of the travel time function, where the travel time function is convex.
 
-All of this can, again, be approximated computationally.
+The probability density function becomes thus
+
+\begin{equation}
+  \label{eq:pdf_early}
+  f_{I | L}(t_a | 0) = f_\beta(tt_a'(t_a))[tt_a''(t_a)]^+
+\end{equation}
+and, analogously,
+
+\begin{equation}
+  \label{eq:pdf_late}
+  f_{I | L}(t_a | 1) = f_\gamma(-tt_a'(t_a))[tt_a''(t_a)]^+
+\end{equation}
+
+The only thing that is left is now to compute the probabilities \(\mathbb{P}(L=1 | Q=1)\), \(\mathbb{P}(L=0 | Q=1)\).
+
+As it turns out, it is easier to just compute the joint probability \(\mathbb{P}(L, Q\) instead of the conditional one, and the conditional one will then be simplified when substituting in \eqref{eq:likelihood_split}.
+
+The probability \(\mathbb{P}(L=0, Q=1)\) will be exactly the probability that \(t^*\) is in the interval \((b_i(b), b_e(b))\), for some realization of the variable \(\beta\ b\).
+
+It will thus be sufficient to integrate twice the pdf:
+
+\begin{align}
+  \label{eq:prob_int_beta}
+  \begin{split}
+    \mathbb{P}(L=0, Q=1) & =\mathbb{P}(t^* \in (b_i(\beta), b_e(\beta))) \\
+    & = \int_0^{\beta_\text{max}}\int_{b_i(b)}^{b_e(b)} \mathbb{P}(t^* = t) dt\,\mathbb{P}(\beta = b) db
+      \end{split}
+\end{align}
+
+and similarly for \(\gamma\),
+\begin{equation}
+  \label{eq:prob_in_gamma}
+  \mathbb{P}(L=1, Q=1) = \int_1^{\gamma_\text{max}}\int_{g_i(g)}^{g_e(g)} \mathbb{P}(t^* = t) dt\,\mathbb{P}(\gamma = g) dg
+\end{equation}
 
 \end{document}
 %%% Local Variables:
