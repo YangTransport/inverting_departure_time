@@ -313,21 +313,24 @@ Let \(t_a\) be a sample of the optimal arrival time. The likelihood of the param
 \begin{equation}
   \label{eq:likelihood_def}
   \mathcal{L}(\mu_\beta, \mu_\gamma, \mu_t, \sigma, \sigma_t\ \vert\ T_a = t_a) =
-  \mathbb{P}(T_a = t_a \ \vert\ \mu_\beta, \mu_\gamma, \mu_t, \sigma, \sigma_t)
+  f_{T_a; \mu_\beta, \mu_\gamma, \mu_t, \sigma, \sigma_t}(t_a)
 \end{equation}
 
 But what is the random variable \(T_a\)?
 It takes, as parameters, mean and variances of normally distributed \(\beta, \gamma, t^*\) and represent the resulting distribution for the point \(ot(t^*)\) that minimizes the cost.
+\(f_{T_a; \theta\) is its probability density function, given the parameters \(\theta\).
 
 Let's thus study the likelhook in \eqref{eq:likelihood_def}.
 Given a point \(t_a\), it is either an internal minimum or a kink minimum (and thus equal to \(t^*\)).
 
-The probability can thus be decomposed in
+Let thus \(I\) be a random variable which describes the distribution of internal minima,
+\(K\) a random variable which describes the distribution of kink minima.
+
+The pdf can be decomposed in
 
 \begin{equation}
   \label{eq:likelihood_split}
-  \mathbb{P}(T_a = t_a) = \mathbb{P}(T_a = t_a, t_a \text{ is internal minimum}) +
-  \mathbb{P}(T_a = t_a, t_a \text{ is a minimum on the kink})
+  f_{T_a}(t_a) = \frac{f_I(t_a) + f_K(t_a)}{2}
 \end{equation}
 
 From now on, for simplicity we suppose there is at most one point which realizes
@@ -365,12 +368,22 @@ We can thus see a bit better what equation \eqref{eq:likelihood_split} means, si
 
 \subsection{Probability of the point being a kink minimum}
 
-\begin{align}
+The event \textit{being a kink minimum} can thus be decomposed in \textit{being a realization of the random variable \(T^*\)} and \textit{not being into an interval that would yield an internal minimum}.
+
+These events are independent, since \(T^*\) is independent from the variables \(\gamma\) and \(\beta\) that decide the intervals.
+
+The pdf for the variable \(K\) will thus be
+
+\begin{equation}
   \label{eq:prob_kink}
+    f_K(t_a) & = \frac{f_{T^*}(t_a)\mathbb{P}( t_a \not\in (b_i(\beta), b_e(\beta)) \cup (g_i(\gamma), g_e(\gamma)))}{\int_{-\infty}^\infty f_{T^*}(t_a)\mathbb{P}( t_a \not\in (b_i(\beta), b_e(\beta)) \cup (g_i(\gamma), g_e(\gamma)))dt_a}
+\end{equation}
+
+\begin{align}
   \begin{split}
     \mathbb{P}(T_a = t_a, t_a \text{ is kink min}) & = \mathbb{P}(t^* = t_a, t^* \not\in (b_i(\beta), b_e(\beta)) \cup (g_i(\gamma), g_e(\gamma))) \\
-    & = \mathbb{P}(t^* = t_a)\mathbb{P}( t_a \not\in (b_i(\beta), b_e(\beta)) \cup (g_i(\gamma), g_e(\gamma))) \\
-    & = \mathbb{P}(t^* = t_a)\int_{b\in \mathbb{R} \vert t_a \not\in (b_i(b), b_e(b))}\int_{g \in \mathbb{R} \vert t_a \not\in (g_i(g), g_e(g))}\mathbb{P}(\beta = b)\mathbb{P}(\gamma = g)\, dg\, db
+                                                   & = \mathbb{P}(t^* = t_a)\mathbb{P}( t_a \not\in (b_i(\beta), b_e(\beta)) \cup (g_i(\gamma), g_e(\gamma))) \\
+                                                   & = \mathbb{P}(t^* = t_a)\int_{b\in \mathbb{R} \vert t_a \not\in (b_i(b), b_e(b))}\int_{g \in \mathbb{R} \vert t_a \not\in (g_i(g), g_e(g))}\mathbb{P}(\beta = b)\mathbb{P}(\gamma = g)\, dg\, db
   \end{split}
 \end{align}
 
