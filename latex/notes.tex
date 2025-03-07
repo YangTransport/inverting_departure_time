@@ -488,6 +488,42 @@ and similarly for \(\gamma\),
   \mathbb{P}(L=1, Q=1) = \int_1^{\gamma_\text{max}}\int_{g_i(g)}^{g_e(g)} f_{T^*}(t)dtf_\gamma(g)dg
 \end{equation}
 
+\section{Some results}
+
+The likelihood function still has to be improved as it is not always extremely precise. Moreover the handling of large dataset (not really large, more than 1000 samples) has to be fixed.
+
+Still, with small dataset we manage to have pretty good results.
+
+\begin{figure}
+  \centering
+  \includegraphics[width=.8\textwidth]{img/contour_mus.png}
+  \caption{Contour plots of the likelihood versus means, for initial parameters 0.7, 1.3, 9.5, 0.1, 1 (that are considered easy, non problematic parameters). The red dot shows the parameters that generated the data, the green one the ones retrieved by the optimizer.}
+  \label{fig:easy_par}
+\end{figure}
+
+
+\begin{figure}
+  \centering
+  \includegraphics[width=.8\textwidth]{img/contour_mus_not_converging.png}
+  \caption{Contour plots of the likelihood versus means, for initial parameters 0.6, 2.4, 10, 0.2, 1 (that are considered not easy, quite problematic parameters). The red dot shows the parameters that generated the data, the green one the ones retrieved by the optimizer.}
+  \label{fig:diff_par}
+\end{figure}
+
+
+Figure~\ref{fig:easy_par} shows how the likelihood looks like plotted against the means of the parameters \(\beta\), \(\gamma\), and how the optimizer converges for easy parameters.
+Figure \autoref{fig:diff_par} shows the same for more difficult parameters.
+
+In both cases the sample size is 200 data points, and the plot is done fixing the other parameters (tha variances and the mean of \(t^*\)) to the original values, with which the data have been generated.
+
+\begin{figure}
+  \centering
+  \includegraphics[width=.8\textwidth]{img/likelihood_over_ta}
+  \caption{Plot of where the data actually are (in blue), versus where the data are forcasted to be knowing the actual parameters (in red). The sample size is 200 data points, and the parameters are, as earlier, 0.6, 2.4, 10, 0.2, 1}
+  \label{fig:likelihood_over_tas}
+\end{figure}
+
+Lastly, figure~\autoref{fig:likelihood_over_tas} shows where, knowing the parameters but ithout knowing the data, the data are forcasted to be.
+As can be seen, there is room for improvements in the location of the left spike. This is due to an error in estimating an integral that can be fixed.
 \end{document}
 %%% Local Variables:
 %%% mode: LaTeX
