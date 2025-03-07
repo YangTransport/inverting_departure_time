@@ -483,14 +483,14 @@ It will thus be sufficient to integrate twice the pdf:
   \label{eq:prob_int_beta}
   \begin{split}
     \mathbb{P}(L=0, Q=1) & =\mathbb{P}(t^* \in (b_i(\beta), b_e(\beta))) \\
-    & = \int_0^{\beta_\text{max}}\int_{b_i(b)}^{b_e(b)} \mathbb{P}(t^* = t) dt\,\mathbb{P}(\beta = b) db
+    & = \int_0^{\beta_\text{max}}\int_{b_i(b)}^{b_e(b)} f_{T^*}(t)dtf_\beta(b)db
       \end{split}
 \end{align}
 
 and similarly for \(\gamma\),
 \begin{equation}
   \label{eq:prob_in_gamma}
-  \mathbb{P}(L=1, Q=1) = \int_1^{\gamma_\text{max}}\int_{g_i(g)}^{g_e(g)} \mathbb{P}(t^* = t) dt\,\mathbb{P}(\gamma = g) dg
+  \mathbb{P}(L=1, Q=1) = \int_1^{\gamma_\text{max}}\int_{g_i(g)}^{g_e(g)} f_{T^*}(t)dtf_\gamma(g)dg
 \end{equation}
 
 \end{document}
