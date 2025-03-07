@@ -375,16 +375,16 @@ The pdf for the variable \(K\) will thus be
 
 \begin{equation}
   \label{eq:prob_kink}
-    f_K(t_a) & = \frac{f_{T^*}(t_a)\mathbb{P}( t_a \not\in (b_i(\beta), b_e(\beta)) \cup (g_i(\gamma), g_e(\gamma)))}{\int_{-\infty}^\infty f_{T^*}(t_a)\mathbb{P}( t_a \not\in (b_i(\beta), b_e(\beta)) \cup (g_i(\gamma), g_e(\gamma)))dt_a}
+    f_{T_a | Q}(t_a | 0) & = \frac{f_{T^*}(t_a)\mathbb{P}( t_a \not\in (b_i(\beta), b_e(\beta)) \cup (g_i(\gamma), g_e(\gamma)))}{\int_{-\infty}^\infty f_{T^*}(t_a)\mathbb{P}( t_a \not\in (b_i(\beta), b_e(\beta)) \cup (g_i(\gamma), g_e(\gamma)))dt_a}
 \end{equation}
 
-\begin{align}
-  \begin{split}
-    \mathbb{P}(T_a = t_a, t_a \text{ is kink min}) & = \mathbb{P}(t^* = t_a, t^* \not\in (b_i(\beta), b_e(\beta)) \cup (g_i(\gamma), g_e(\gamma))) \\
-                                                   & = \mathbb{P}(t^* = t_a)\mathbb{P}( t_a \not\in (b_i(\beta), b_e(\beta)) \cup (g_i(\gamma), g_e(\gamma))) \\
-                                                   & = \mathbb{P}(t^* = t_a)\int_{b\in \mathbb{R} \vert t_a \not\in (b_i(b), b_e(b))}\int_{g \in \mathbb{R} \vert t_a \not\in (g_i(g), g_e(g))}\mathbb{P}(\beta = b)\mathbb{P}(\gamma = g)\, dg\, db
-  \end{split}
-\end{align}
+\(f_{T^*}(t_a)\) is known, since the distribution of the variable \(T^*\) is known.
+
+For the second probability, on the other hand, we have 
+
+\begin{equation*}
+  \mathbb{P}( t_a \not\in (b_i(\beta), b_e(\beta)) \cup (g_i(\gamma), g_e(\gamma)))dt_a} = \int_{b\in \mathbb{R} \vert t_a \not\in (b_i(b), b_e(b))}\int_{g \in \mathbb{R} \vert t_a \not\in (g_i(g), g_e(g))}\mathbb{P}(\beta = b)\mathbb{P}(\gamma = g)\, dg\, db
+\end{equation*}
 
 This is pretty straightforward, except for a problem in defining the domain of the integral.
 This could be approximated in some ways.
@@ -407,12 +407,28 @@ we indeed now have that there exist \(\beta_0(t_a), \gamma_0(t_a) \in \mathbb{R}
   \end{split}
 \end{align}
 
-Since the values of \(\beta_0, \gamma_0\) can be found by bisection (this because the functions \(b_i, b_e, g_i, g_e\) can be numerically evaluated as well), by initializing \(\beta\) to \((0, 1)\), \(\gamma\) to \((1, 30)\) (30 is a random high number, unlikely to be lower than the maximum steepness of the travel time function), the expression in \eqref{eq:prob_kink} becomes simply
+Since the values of \(\beta_0, \gamma_0\) can be found by bisection (this because the functions \(b_i, b_e, g_i, g_e\) can be numerically evaluated as well), by initializing \(\beta\) to \((0, 1)\), \(\gamma\) to \((1, 30)\) (30 is a random high number, unlikely to be lower than the maximum steepness of the travel time function), the expression in \eqref{eq:prob_kink} becomes
 
 \begin{align*}
-  \mathbb{P}(T_a = t_a, t_a \text{ is kink min}) & = \mathbb{P}(t^* = t_a)\int_{\beta_0(t_a)}^\infty\mathbb{P}(\beta = b)\, db\int_{\gamma_0(t_a)}^\infty\mathbb{P}(\gamma = g)\, dg \\
-  & = \mathbb{P}(t^* = t_a)\int_{\beta_0(t_a)}^1\mathbb{P}(\beta = b)\, db\int_{\gamma_0(t_a)}^\infty\mathbb{P}(\gamma = g)\, dg \\
+  f_{T_a | Q}(t_a | 0) & = \frac{f_{T^*}(t_a)\int_{\beta_0(t_a)}^\infty f_\beta(b)\, db\int_{\gamma_0(t_a)}^\infty f_\gamma(g)\, dg}{\int_{-\infty}^\infty f_{T^*}(t_a)\int_{\beta_0(t_a)}^\infty f_\beta(b)\, db\int_{\gamma_0(t_a)}^\infty f_\gamma(g)\, dgdt_a} \\
+  & = \frac{f_{T^*}(t_a)\int_{\beta_0(t_a)}^{\beta_\text{max}}f_\beta(b)\, db\int_{\gamma_0(t_a)}^{\gamma_\text{max}}f_\gamma(g)\, dg}{\int_{-\infty}^\infty f_{T^*}(t_a)\int_{\beta_0(t_a)}^{\beta_\text{max}}f_\beta(b)\, db\int_{\gamma_0(t_a)}^{\gamma_\text{max}}f_\gamma(g)\, dgdt_a}
 \end{align*}
+
+Where
+\begin{align*}
+  \beta_\text{max} & = \max_x{tt'(x)} \\
+  \gamma_\text{max} & = \max_x{-tt'(x)} \\
+\end{align*}
+
+Note that the coefficients \(\beta_\text{max}\), \(\gamma_\text{max}\) depend only on the travel time function and can be computed only once per travel time function.
+
+Moreover, the denominator is exactly \(\mathbb{P}(Q = 0)\).
+It will thus simplify in \eqref{eq:likelihood_split}, and the only reason to calculate it will be the weighting
+
+\begin{equation}
+  \label{eq:prob_int}
+  \mathbb{P}(Q = 1) = 1 - \int_{-\infty}^\infty f_{T^*}(t_a)\int_{\beta_0(t_a)}^{\beta_\text{max}}f_\beta(b)\, db\int_{\gamma_0(t_a)}^{\gamma_\text{max}}f_\gamma(g)\, dgdt_a
+\end{equation}
 
 \subsection{Probability of the point being an internal minimum}
 
