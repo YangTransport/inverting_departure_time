@@ -300,7 +300,8 @@ The function \(t_a(t^*)\) is (locally) either equal to the identity \(t_a(t^*) =
 
 \subsection{Intro}
 
-For retrieving the parameters from the data, we first of all need an estimate for the likelihood of the data.
+For retrieving the parameters from the data, I will try to define a function that,
+given the distribution of the parameters, estimates the likelihood of each point.
 
 For this, it is probably a good idea to use the characterization of the function \(t_a(t^*)\) above.
 
@@ -316,8 +317,7 @@ Let \(t_a\) be a sample of the optimal arrival time. The likelihood of the param
   f_{T_a; \mu_\beta, \mu_\gamma, \mu_t, \sigma, \sigma_t}(t_a)
 \end{equation}
 
-But what is the random variable \(T_a\)?
-It takes, as parameters, mean and variances of normally distributed \(\beta, \gamma, t^*\) and represent the resulting distribution for the point \(ot(t^*)\) that minimizes the cost.
+The random variable \(T_a\) is the core of the method: it takes, as parameters, mean and variances of normally distributed \(\beta, \gamma, t^*\) and represent the resulting distribution for the point \(ot(t^*)\) that minimizes the cost.
 \(f_{T_a; \theta}\) is its probability density function, given the parameters \(\theta\).
 
 Let's thus study the likelhook in \eqref{eq:likelihood_def}.
@@ -363,7 +363,7 @@ We now have a complete characterization of the function \(ot\):
   \end{cases}
 \end{equation}
 
-We can thus see a bit better what equation \eqref{eq:likelihood_split} means, since we know where the internal minima are and when the kink actually minimizes the cost function.
+We can thus see a bit better what equation \eqref{eq:likelihood_split} means, since we know where the internal minima are and where the kink actually minimizes the cost function.
 
 \subsection{Probability of the point being a kink minimum}
 
@@ -376,26 +376,26 @@ The pdf for the variable \(K\) will thus be
 \begin{equation}
   \label{eq:prob_kink}
     f_{T_a | Q}(t_a | 0) = \frac{f_{T^*}(t_a)\mathbb{P}( t_a \not\in (b_i(\beta), b_e(\beta)) \cup (g_i(\gamma), g_e(\gamma)))}{\int_{-\infty}^\infty f_{T^*}(t_a)\mathbb{P}( t_a \not\in (b_i(\beta), b_e(\beta)) \cup (g_i(\gamma), g_e(\gamma)))dt_a}
-\end{equation}
+  \end{equation}
+ where the denominator is nothing but a normalization constant, found by integrating the numerator over all the domain of \(t_a\).
 
 \(f_{T^*}(t_a)\) is known, since the distribution of the variable \(T^*\) is known.
 
-For the second probability, on the other hand, we have 
+For the probability of not being in the interval, on the other hand, we have 
 
 \begin{equation*}
-  \mathbb{P}( t_a \not\in (b_i(\beta), b_e(\beta)) \cup (g_i(\gamma), g_e(\gamma)))dt_a = \int_{b\in \mathbb{R} \vert t_a \not\in (b_i(b), b_e(b))}\int_{g \in \mathbb{R} \vert t_a \not\in (g_i(g), g_e(g))}\mathbb{P}(\beta = b)\mathbb{P}(\gamma = g)\, dg\, db
+  \mathbb{P}( t_a \not\in (b_i(\beta), b_e(\beta)) \cup (g_i(\gamma), g_e(\gamma)))dt_a = \int_{b\in \mathbb{R} \vert t_a \not\in (b_i(b), b_e(b))}\int_{g \in \mathbb{R} \vert t_a \not\in (g_i(g), g_e(g))}f_\beta(b)f_\gamma(g)\, dg\, db
 \end{equation*}
 
-This is pretty straightforward, except for a problem in defining the domain of the integral.
-This could be approximated in some ways.
+This is pretty straightforward, except for a problem in defining the domain of the integral, which will be numerically estimated.
 
-The following proposition shows that the intervals shrink with increasing \(\beta\) (and with decreasing \(\gamma\)), making the estimation easier.
+The following proposition shows that the intervals shrink with increasing \(\beta\) (and with decreasing \(\gamma\)), making the estimation of the domain
 \begin{prop}
   \(b_i(\beta)\) is increasing in \(\beta\), while \(b_e(\beta)\) is decreasing in \(\beta\).
   Similarly, \(g_i\) is increasing and \(g_e\) is decreasing.
 \end{prop}
 \begin{proof}
-  This simply follow from the convexity of the function in \(t_\beta, t_\gamma\), and from the assumption of having only one point with the given slope (that implies that in \(b_e(\beta), g_i(\gamma)\) the function is concave).
+  This simply follows from the convexity of the function in \(t_\beta, t_\gamma\), and from the assumption of having only one point with the given slope (that implies that in \(b_e(\beta), g_i(\gamma)\) the function is concave).
 \end{proof}
 This considerably simplifies the approximation of the integration domain:
 we indeed now have that there exist \(\beta_0(t_a), \gamma_0(t_a) \in \mathbb{R}\) such that
@@ -407,28 +407,23 @@ we indeed now have that there exist \(\beta_0(t_a), \gamma_0(t_a) \in \mathbb{R}
   \end{split}
 \end{align}
 
-Since the values of \(\beta_0, \gamma_0\) can be found by bisection (this because the functions \(b_i, b_e, g_i, g_e\) can be numerically evaluated as well), by initializing \(\beta\) to \((0, 1)\), \(\gamma\) to \((1, 30)\) (30 is a random high number, unlikely to be lower than the maximum steepness of the travel time function), the expression in \eqref{eq:prob_kink} becomes
+Let thus
+\begin{align*}
+  \beta_\text{max} & = \max_x{tt'(x)} \\
+  \gamma_\text{max} & = \max_x{-tt'(x)} \\
+\end{align*}
+
+Since the values of \(\beta_0, \gamma_0\) can be found by bisection (this because the functions \(b_i, b_e, g_i, g_e\) can be numerically evaluated as well), by initializing \(\beta\) to \((0, \beta_\text{max})\), \(\gamma\) to \((1, \gamma_\text{max})\), the expression in \eqref{eq:prob_kink} becomes
 
 \begin{align*}
   f_{T_a | Q}(t_a | 0) & = \frac{f_{T^*}(t_a)\int_{\beta_0(t_a)}^\infty f_\beta(b)\, db\int_{\gamma_0(t_a)}^\infty f_\gamma(g)\, dg}{\int_{-\infty}^\infty f_{T^*}(t_a)\int_{\beta_0(t_a)}^\infty f_\beta(b)\, db\int_{\gamma_0(t_a)}^\infty f_\gamma(g)\, dgdt_a} \\
   & = \frac{f_{T^*}(t_a)\int_{\beta_0(t_a)}^{\beta_\text{max}}f_\beta(b)\, db\int_{\gamma_0(t_a)}^{\gamma_\text{max}}f_\gamma(g)\, dg}{\int_{-\infty}^\infty f_{T^*}(t_a)\int_{\beta_0(t_a)}^{\beta_\text{max}}f_\beta(b)\, db\int_{\gamma_0(t_a)}^{\gamma_\text{max}}f_\gamma(g)\, dgdt_a}
 \end{align*}
 
-Where
-\begin{align*}
-  \beta_\text{max} & = \max_x{tt'(x)} \\
-  \gamma_\text{max} & = \max_x{-tt'(x)} \\
-\end{align*}
-
 Note that the coefficients \(\beta_\text{max}\), \(\gamma_\text{max}\) depend only on the travel time function and can be computed only once per travel time function.
 
 Moreover, the denominator is exactly \(\mathbb{P}(Q = 0)\).
-It will thus simplify in \eqref{eq:likelihood_split}, and the only reason to calculate it will be the weighting
-
-\begin{equation}
-  \label{eq:prob_int}
-  \mathbb{P}(Q = 1) = 1 - \int_{-\infty}^\infty f_{T^*}(t_a)\int_{\beta_0(t_a)}^{\beta_\text{max}}f_\beta(b)\, db\int_{\gamma_0(t_a)}^{\gamma_\text{max}}f_\gamma(g)\, dgdt_a
-\end{equation}
+It will thus simplify in \eqref{eq:likelihood_split}
 
 \subsection{Probability of the point being an internal minimum}
 
