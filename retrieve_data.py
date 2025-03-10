@@ -68,7 +68,8 @@ def likelihood(travel_time, t_a, mu_b, mu_g, mu_t, sigma, sigma_t):
     fx_g = vmap(inner_int_g)(x_g)
     int_result_g = trapezoid(fx_g, x_g, axis=0)
     likelihood_internal = int_result_b * prob_allowed_b + int_result_g * prob_allowed_g
-    return likelihood_kink + likelihood_internal
+    likelihood = likelihood_kink + likelihood_internal
+    return jnp.maximum(likelihood, 1e-31)
 
 def total_liks(travel_time, t_as):
     def mapped_lik(mu_b, mu_g, mu_t, sigma, sigma_t):
