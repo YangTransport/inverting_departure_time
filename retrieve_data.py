@@ -34,9 +34,8 @@ def likelihood(travel_time, t_a, mu_b, mu_g, mu_t, sigma, sigma_t):
     # Now for the internal minima: the easiest probability to compute
     # is the probability that a point is allowed to be an internal
     # minimum for some realization of beta
-    travel_time_diff = grad(travel_time)
-    prob_allowed_b = pdf_b(travel_time_diff(t_a)) * relu(grad(travel_time_diff)(t_a))
-    prob_allowed_g = pdf_g(-travel_time_diff(t_a)) * relu(grad(travel_time_diff)(t_a))
+    prob_allowed_b = pdf_b(travel_time.df(t_a)) * relu(travel_time.d2f(t_a))
+    prob_allowed_g = pdf_g(-travel_time.df(t_a)) * relu(travel_time.d2f(t_a))
 
     # This probability has to be mutiplied to the probability that t*
     # is actually in the interval that would yield a constant minimum,
@@ -52,20 +51,13 @@ def likelihood(travel_time, t_a, mu_b, mu_g, mu_t, sigma, sigma_t):
     
     min_b = 1e-2
     points = 50
-    x_b = jnp.linspace(min_b, 1-min_b, points)
+    x_b = jnp.linspace(min_b, travel_time.maxb, points)
     fx_b = vmap(inner_int_b)(x_b)
     int_result_b = trapezoid(fx_b, x_b, axis=0)
 
     min_g = 1
     
-    # For computing the maximum possible value of gamma, the maximum
-    # value of the gradient of the travel time is computed. This
-    # computation can be done only once and delegated to a more
-    # articulated travel_time class. This is an improvement to be
-    # done.
-    x = jnp.linspace(0, 24, 1000)
-    max_g = -jnp.min(vmap(travel_time_diff)(x)) - 1e-1
-    x_g = jnp.linspace(min_g, max_g, points)
+    x_g = jnp.linspace(min_g, travel_time.maxg, points)
     fx_g = vmap(inner_int_g)(x_g)
     int_result_g = trapezoid(fx_g, x_g, axis=0)
     likelihood_internal = int_result_b * prob_allowed_b + int_result_g * prob_allowed_g

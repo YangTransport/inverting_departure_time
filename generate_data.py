@@ -6,7 +6,7 @@ from scipy.stats import norm
 
 def cost(travel_time):
     def inner_cost(t_a, beta, gamma, t_star):
-        return travel_time(t_a) + beta * jnp.maximum(0, t_star - t_a) + gamma * jnp.maximum(0, t_a - t_star) 
+        return travel_time.f(t_a) + beta * jnp.maximum(0, t_star - t_a) + gamma * jnp.maximum(0, t_a - t_star) 
     return inner_cost
 
 

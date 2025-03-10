@@ -16,7 +16,7 @@ def find_bs(beta, travel_time):
     # because the function will become shallower the lower the beta
     # is.
     stepsize = lambda n: steps()(n)/beta
-    in_obj = lambda x: travel_time(x) - beta*x
+    in_obj = lambda x: travel_time.f(x) - beta*x
     solver = GradientDescent(fun=in_obj, acceleration=False, stepsize=stepsize)
     b_i, _ = solver.run(0.)
 
@@ -24,7 +24,7 @@ def find_bs(beta, travel_time):
     # whith slope beta, crosses the travel time function.
     # This point is found via a bisection
         
-    fin_obj = lambda x: travel_time(x) - beta*(x - b_i) - travel_time(b_i)
+    fin_obj = lambda x: travel_time.f(x) - beta*(x - b_i) - travel_time.f(b_i)
 
     # Two points where to start the bisection are computed
     step = .5
@@ -80,7 +80,7 @@ def find_gs(gamma, travel_time):
     
     # A gradient descent algorithm finds the final point
     stepsize = lambda n: steps()(n)/gamma
-    fin_obj = lambda x: travel_time(x) + gamma*x
+    fin_obj = lambda x: travel_time.f(x) + gamma*x
     solver = GradientDescent(fun=fin_obj, acceleration=False, stepsize=stepsize)
     g_e, state = solver.run(24.)
 
@@ -89,7 +89,7 @@ def find_gs(gamma, travel_time):
     # function.
     # This point is found via a bisection
         
-    fin_obj = lambda x: travel_time(x) + gamma*(x - g_e) - travel_time(g_e)
+    fin_obj = lambda x: travel_time.f(x) + gamma*(x - g_e) - travel_time.f(g_e)
 
     # Two points where to start the bisection are computed
     step = .5
