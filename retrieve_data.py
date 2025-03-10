@@ -79,5 +79,5 @@ def total_liks(travel_time, t_as):
 def total_log_lik(travel_time, t_as):
     def mapped_lik(mu_b, mu_g, mu_t, sigma, sigma_t):
         lik_restr = lambda t_a: likelihood(travel_time, t_a, mu_b, mu_g, mu_t, sigma, sigma_t)
-        return jnp.sum(jnp.log(vmap(lik_restr)(t_as)))
+        return jnp.sum(jnp.log(vmap(lik_restr)(t_as)), axis=0)
     return mapped_lik
