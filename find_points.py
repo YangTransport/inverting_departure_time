@@ -73,8 +73,8 @@ def find_gs(gamma, travel_time):
     Returns a couple containing initial and final points of the interval.
 
     NOTE: This function's result will be meaningless if called on
-    values of gamma greatest than the minimum steep of the travel time
-    function. Don't do that
+    values of gamma greater than the maximum steep of the negative
+    travel time function. Don't do that
 
     """
     
