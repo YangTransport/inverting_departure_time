@@ -1,4 +1,5 @@
 from jax import grad, vmap
+from jax.nn import relu
 from jax.scipy.integrate import trapezoid
 from jax.scipy.stats import truncnorm as jtruncnorm
 from jax.scipy.stats import norm as jnorm
@@ -34,8 +35,8 @@ def likelihood(travel_time, t_a, mu_b, mu_g, mu_t, sigma, sigma_t):
     # is the probability that a point is allowed to be an internal
     # minimum for some realization of beta
     travel_time_diff = grad(travel_time)
-    prob_allowed_b = pdf_b(travel_time_diff(t_a)) * (grad(travel_time_diff)(t_a) > 0)
-    prob_allowed_g = pdf_g(-travel_time_diff(t_a)) * (grad(travel_time_diff)(t_a) > 0)
+    prob_allowed_b = pdf_b(travel_time_diff(t_a)) * relu(grad(travel_time_diff)(t_a))
+    prob_allowed_g = pdf_g(-travel_time_diff(t_a)) * relu(grad(travel_time_diff)(t_a))
 
     # This probability has to be mutiplied to the probability that t*
     # is actually in the interval that would yield a constant minimum,
