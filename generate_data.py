@@ -39,8 +39,8 @@ def generate_arrival(n, travel_time, mu_beta=0.7, mu_gamma=1.2, mu_t=9.5, sigma=
 
     # Betas, gammas and t_star are generated according to the chosen distributions
     
-    betas = truncnorm.rvs(-mu_beta / sigma, 100000, loc=mu_beta, scale=sigma, size=n)
-    gammas = truncnorm.rvs(-mu_gamma / sigma, 100000, loc=mu_gamma, scale=sigma, size=n)
+    betas = truncnorm.rvs(-mu_beta / sigma, (1 - mu_beta)/sigma, loc=mu_beta, scale=sigma, size=n)
+    gammas = truncnorm.rvs((1 - mu_gamma) / sigma, 100000, loc=mu_gamma, scale=sigma, size=n)
     ts = norm.rvs(mu_t, sigma_t, n)
     return betas, gammas, ts, find_td(travel_time)(betas, gammas, ts)
 
