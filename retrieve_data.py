@@ -16,14 +16,14 @@ def likelihood(travel_time, t_a, mu_b, mu_g, mu_t, sigma, sigma_t):
     """
 
     # The truncated normals pdf and cdf are definde here
-    cdf_b = lambda b: jnorm.cdf(b, mu_b, sigma)
-    cdf_g = lambda g: jnorm.cdf(g, mu_g, sigma)
-    pdf_b = lambda b: jnorm.pdf(b, mu_b, sigma)
-    pdf_g = lambda g: jnorm.pdf(g, mu_g, sigma)
-    # cdf_b = lambda b: jtruncnorm.cdf(b, -mu_b / sigma, (1 - mu_b) / sigma, loc=mu_b, scale=sigma)
-    # cdf_g = lambda g: jtruncnorm.cdf(g, (1 -mu_g) / sigma, 100000, loc=mu_g, scale=sigma)
-    # pdf_b = lambda b: jtruncnorm.pdf(b, -mu_b / sigma, (1 - mu_b) / sigma, mu_b, sigma)
-    # pdf_g = lambda g: jtruncnorm.pdf(g, (1 - mu_g) / sigma, 10000, mu_g, sigma)
+    # cdf_b = lambda b: jnorm.cdf(b, mu_b, sigma)
+    # cdf_g = lambda g: jnorm.cdf(g, mu_g, sigma)
+    # pdf_b = lambda b: jnorm.pdf(b, mu_b, sigma)
+    # pdf_g = lambda g: jnorm.pdf(g, mu_g, sigma)
+    cdf_b = lambda b: jtruncnorm.cdf(b, -mu_b / sigma, (1 - mu_b) / sigma, loc=mu_b, scale=sigma)
+    cdf_g = lambda g: jtruncnorm.cdf(g, (1 -mu_g) / sigma, 100000, loc=mu_g, scale=sigma)
+    pdf_b = lambda b: jtruncnorm.pdf(b, -mu_b / sigma, (1 - mu_b) / sigma, mu_b, sigma)
+    pdf_g = lambda g: jtruncnorm.pdf(g, (1 - mu_g) / sigma, 10000, mu_g, sigma)
 
     # For computing the probability that a point is a kink minimum, an
     # integral is computed as in the latex.
