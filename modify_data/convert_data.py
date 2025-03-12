@@ -11,6 +11,7 @@ new_tt = dict()
 for dp in dps:
     new_tt[dp] = np.array([arrival_time(d, dp, x, 1/travel_times) for d in x]) - x
 
+fig = plt.figure()
 plt.plot(x, travel_times, label="Original data")
 for dp in dps:
     plt.plot(x, new_tt[dp], label=r"Transformed data, $d^p = {}$".format(dp), linewidth=.8)
@@ -19,6 +20,8 @@ plt.plot([24, 21], [0, 2*2.35], label=r"Tipical slope $y = \frac{\gamma}{\alpha}
 plt.legend()
 plt.xlabel("Time of the day (hours)")
 plt.ylabel("Travel time (hours)")
+fig.set_size_inches(10, 5)
+# plt.savefig("../latex/img/transforming_data.png", dpi=600)
 plt.show()
 
 #%%
