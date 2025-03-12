@@ -34,7 +34,21 @@ def likelihood(travel_time, t_a, mu_b, mu_g, mu_t, sigma, sigma_t):
     # Now for the internal minima: the easiest probability to compute
     # is the probability that a point is allowed to be an internal
     # minimum for some realization of beta
-    prob_allowed_b = pdf_b(travel_time.df(t_a)) * relu(travel_time.d2f(t_a))
+
+    lower_inner_int = lambda t: (lambda s: jnorm.pdf(s, mu_t, sigma_t)
+                                 * (t < find_b0(s, travel_time)))
+
+    t_points = 800
+    ts = jnp.linspace(0, 24, t_points)
+
+    prob_lower_b = lambda t: trapezoid(vmap(lower_inner_int(t))(ts), ts, axis=0)
+
+    # normalization_term_b = trapezoid(pdf_b(vmap(travel_time.df)(ts)) * prob_lower_b(vmap(travel_time.df)(ts)), ts)
+    normalization_term_b = trapezoid(pdf_b((ts)) * prob_lower_b((ts)), ts)
+    
+    conditional_pdf_b = pdf_b(travel_time.df(t_a)) * prob_lower_b(travel_time.df(t_a)) / normalization_term_b
+    
+    prob_allowed_b = conditional_pdf_b * relu(travel_time.d2f(t_a))
     prob_allowed_g = pdf_g(-travel_time.df(t_a)) * relu(travel_time.d2f(t_a))
 
     # This probability has to be mutiplied to the probability that t*
