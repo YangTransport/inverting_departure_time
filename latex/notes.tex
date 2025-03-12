@@ -498,7 +498,7 @@ in practice the pdf is truncated, and the truncation is a weighting based on the
 By adding a normalization constant at the denominator, the pdf should thus be
 
 \begin{equation*}
-  f_{\beta | L}(tt_a'(t_a) | 0) = \frac{f_\beta(tt_a'(t_a))\mathbb{P}(tt_a'(t_a) < \beta_0(T^*))}{\int_{-\infty}^\infty f_\beta(tt_a'(t))\mathbb{P}(tt_a'(t) < \beta_0(T^*)) dt}
+  f_{\beta | L}(tt_a'(t_a) | 0) = \frac{f_\beta(tt_a'(t_a))\mathbb{P}(tt_a'(t_a) < \beta_0(T^*))}{\int_{-\infty}^\infty f_\beta(t)\mathbb{P}(t < \beta_0(T^*)) dt}
 \end{equation*}
 
 Now, the only thing not trivial to compute is the probability \(\mathbb{P}(tt_a'(t) < \beta_0(T^*))\).
