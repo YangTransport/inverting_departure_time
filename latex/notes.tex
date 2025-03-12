@@ -439,6 +439,11 @@ Let's thus define again a binary random variable \(L\), where \(L=1\) for the ev
   f_I(t_a) = f_{I | L}(t_a | 0) \mathbb{P}(L=0 | Q=1) + f_{I | L}(t_a | 1) \mathbb{P}(L=1 | Q=1)
 \end{equation}
 
+There are thus two functions to be estimated:
+the conditional pdf \(f_{I | L}(t_a | 0)\) and the probability \(\mathbb{P}(L=0 | Q=1)\).
+
+\subsubsection{Estimation of $f_{I | L}(t_a | 0)$}
+
 \(f_{I | L}(t_a | 0)\) is the distribution arising from applying the transformation \(b_i\) to a variable distributed as \(\beta\) (similarly for \(\gamma\)).
 
 We have
@@ -446,12 +451,10 @@ We have
   \label{eq:pdf_bi}
   \begin{split}
     \beta & \sim \mathcal{N}(\mu_\beta, \sigma_\beta) \\[1em]
-    f_{I | L}(t_a | 0) & = \text{pdf}(b_i(\beta))(t_a) \\
-    & = f_\beta(b_i^{-1}(t_a))\diff{b_i^{-1}}{t_a}(t_a)
+    f_{I | L}(t_a | 0) & = f_{b_i(\beta) | L}(t_a | 0) \\
+    & = f_{\beta | L}(b_i^{-1}(t_a) | 0)\diff{b_i^{-1}}{t_a}(t_a)
   \end{split}
 \end{align}
-
-\textcolor{red}{BECAREFUL - ERROR!!!} I am here using the whole \(\beta\) pdf \(f_\beta(x)\), while I should use the pdf \(f_{\beta | L}(x | 0)\)!!! Look into this because it is causing a bug
 
 Note now that computing the inverse of \(b_i\) is exactly just looking at the steepness of the travel time function, where the travel time function is convex.
 
@@ -459,14 +462,52 @@ The probability density function becomes thus
 
 \begin{equation}
   \label{eq:pdf_early}
-  f_{I | L}(t_a | 0) = f_\beta(tt_a'(t_a))[tt_a''(t_a)]^+
+  f_{I | L}(t_a | 0) = f_{\beta | L}(tt_a'(t_a) | 0)[tt_a''(t_a)]^+
 \end{equation}
 and, analogously,
 
 \begin{equation}
   \label{eq:pdf_late}
-  f_{I | L}(t_a | 1) = f_\gamma(-tt_a'(t_a))[tt_a''(t_a)]^+
+  f_{I | L}(t_a | 1) = f_{\gamma | L}(-tt_a'(t_a) | 1)[tt_a''(t_a)]^+
 \end{equation}
+
+Now, what is the distribution of \(\beta\) (and \(\gamma\)) given that an early (respectively, late) solution is found?
+As always, consider the case in which the solution is an early arrival.
+As noted earlier, a solution is an early arrival if and only if \(T^* \in (b_i(\beta), b_e(\beta))\), or, equivalently, \(\beta < \beta_0(T^*)\)
+
+To understand better what is going on, I will explicitly write the cdf.
+
+\begin{align*}
+  f_{\beta | L}(tt_a'(t_a) | 0) & = \diff{}{tt_a'(t_a)}F_{\beta | L}(tt_a'(t_a) | 0) \\
+  & = \diff{}{tt_a'(t_a)}\mathbb{P}(\beta < tt_a'(t_a) | \beta < \beta_0(T^*)) \\
+  & = \frac{\diff{}{tt_a'(t_a)}\mathbb{P}(\beta < tt_a'(t_a), \beta < \beta_0(T^*))}{\mathbb{P}(\beta < \beta_0(T^*))} \\
+  & = \frac{\diff{}{tt_a'(t_a)}\mathbb{P}(\beta < \min(tt_a'(t_a), \beta_0(T^*)))}{\mathbb{P}(\beta < \beta_0(T^*))}
+\end{align*}
+
+The denominator is pretty easy to compute (I think)
+
+\begin{equation*}
+  \mathbb{P}(\beta < \beta_0(T^*)) = \int_{-\infty}^\infty f_{T^*}(t) F_\beta(\beta_0(T^*)) dt
+\end{equation*}
+
+On the other hand, I don't really know how to compute the numerator (it can probably be done, but I would need to know a bit better what I'm doing).
+
+Maybe a more direct approach works better:
+in practice the pdf is truncated, and the truncation is a weighting based on the probability \(\mathbb{P}(tt_a'(t_a) < \beta_0(T^*))\), where \(t_a\) is the point in which the distribution is being \textit{truncated}.
+
+By adding a normalization constant at the denominator, the pdf should thus be
+
+\begin{equation*}
+  f_{\beta | L}(tt_a'(t_a) | 0) = \frac{f_\beta(tt_a'(t_a))\mathbb{P}(tt_a'(t_a) < \beta_0(T^*))}{\int_{-\infty}^\infty f_\beta(tt_a'(t))\mathbb{P}(tt_a'(t) < \beta_0(T^*)) dt}
+\end{equation*}
+
+Now, the only thing not trivial to compute is the probability \(\mathbb{P}(tt_a'(t) < \beta_0(T^*))\).
+Instead of using the cdf \(F_{T^*}\) inverting \(\beta_0\) (that is not injective), it is probably better to directly evaluate it using an integral:
+\begin{equation*}
+  \mathbb{P}(tt_a'(t) < \beta_0(T^*)) = \int_{-\infty}^\infty f_{T^*}(s) \mathbb{1}(tt_a'(t) < \beta_0(s)) ds
+\end{equation*}
+
+\subsubsection{Estimation of $\mathbb{P}(L=0 | Q=1)$}
 
 The only thing that is left is now to compute the probabilities \(\mathbb{P}(L=1 | Q=1)\), \(\mathbb{P}(L=0 | Q=1)\).
 
