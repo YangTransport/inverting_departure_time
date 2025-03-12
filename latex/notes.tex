@@ -567,6 +567,83 @@ In both cases the sample size is 200 data points, and the plot is done fixing th
 
 Lastly, figure~\autoref{fig:likelihood_over_tas} shows where, knowing the parameters but ithout knowing the data, the data are forcasted to be.
 As can be seen, there is room for improvements in the location of the left spike. This is due to an error in estimating an integral that can be fixed.
+
+\section{Modifying data}
+
+Since some of the data we have regard the instantaneous travel time,
+rather then the travel time given the arrival (or the departure) time,
+it is necessary to transform the instantaneous travel time to the actual travel time necessary to travel through the bottleneck.
+
+Please note: I'm keeping the notation we used wheen we were speaking,
+even if it may be a bit confusing:
+\(v(t)\) is indeed not the instantaneous \textit{velocity},
+but rather the instantaneous \textit{travel time},
+that is directly proportional to the inverse of the velocity.
+
+For computing the actual travel time, we suppose that the bottleneck has fixed length \(d^p\),
+and that in each moment the instantaneous travel time \(v(t)\) is constant along it.
+The length of the bottleneck will thus be
+
+\begin{equation}
+  \label{eq:len_bottleneck}
+  d^p = \int_{t_i}^{t_f}v(t) dt
+\end{equation}
+
+Suppose thus \(v(t)\) has primitive \(V(t)\), such that
+
+\begin{equation}
+  \label{eq:primitive}
+  \int_{t_i}^{t_f}v(t) dt = V(t_f) - V(t_i)
+\end{equation}
+
+Equation \eqref{eq:len_bottleneck} becomes trivially
+
+\begin{align*}
+  d^p & = V(t_f) - V(t_i) \\
+  t_i & = V^{-1}(V(t_f) - d^p)
+\end{align*}
+and the travel time can thus be expressed in function of \(t_f\):
+
+\begin{align*}
+  \begin{split}
+    \label{eq:travel_time}
+    tt(t_f) & = t_i - t_f \\
+    & = V^{-1}(V(t_f) - d^p) - t_f
+  \end{split}
+\end{align*}
+
+In the case in which the instantaneous travel time increase linearly, its primitive is easy to compute and to invert:
+
+\begin{align*}
+  v(t) & = \bar{v}t \\
+  V(t) & = \frac{\bar{v}}{2}t^2 \\
+  V^{-1}(x) & = \sqrt{\frac{2x}{\bar{v}}}
+\end{align*}
+and thus,
+\begin{align*}
+  tt(t_f) & = \sqrt{\frac{2}{\bar{v}}\left(\frac{\bar{v}}{2}t_f^2 - d^p\right)} - t_f \\
+  & = \sqrt{t_f^2 - \frac{2}{\bar{v}}d^p} - t_f
+\end{align*}
+
+\subsection{Numerically}
+
+Numerically, it may be impossible (or very inconvenient) to find the actual primitive \(V(t)\).
+
+An approach that can be taken (especially when the travel time function is just a discrete set of values) is to directly approximate the integral in \eqref{eq:len_bottleneck}.
+This can be done by progressively increasing the domain of integration (where the integration is discrete, approximated with trapezoids),
+until the integral becomes larger than the bottleneck length \(d^p\).
+
+\begin{figure}
+  \centering
+  \makebox[\textwidth][c]{\includegraphics[width=1.9\textwidth]{img/transforming_data}}
+  \caption{Transformed data, for different values of the bottleneck length $d^p$. The lines whose steepness yields late and early arrivals are shown for reference, in order to be able to appreciate the increasing steepness}
+  \label{fig:modifying_data}
+\end{figure}
+
+Figure \ref{fig:modifying_data} shows the result of this process, for different values of the parameter \(d^p\).
+Sadly, plotting the derivative is not particularly meaningful without smoothing the function beforehand,
+since the function is piecewise constant.
+
 \end{document}
 %%% Local Variables:
 %%% mode: LaTeX
