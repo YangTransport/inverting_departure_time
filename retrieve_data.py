@@ -42,7 +42,7 @@ def likelihood(travel_time, t_a, mu_b, mu_g, mu_t, sigma, sigma_t):
     ts = jnp.linspace(0, 24, t_points)
 
     prob_lower_b = lambda t: trapezoid(vmap(lower_inner_int_b(t))(ts), ts, axis=0)
-    normalization_term_b = trapezoid(pdf_b((ts)) * prob_lower_b((ts)), ts, axis=0)
+    normalization_term_b = trapezoid(vmap(pdf_b)(ts) * vmap(prob_lower_b)(ts), ts, axis=0)
     conditional_pdf_b = pdf_b(travel_time.df(t_a)) * prob_lower_b(travel_time.df(t_a)) / normalization_term_b
     prob_allowed_b = conditional_pdf_b * relu(travel_time.d2f(t_a))
 
@@ -50,7 +50,7 @@ def likelihood(travel_time, t_a, mu_b, mu_g, mu_t, sigma, sigma_t):
                                    * (t < find_g0(s, travel_time)))
 
     prob_lower_g = lambda t: trapezoid(vmap(lower_inner_int_g(t))(ts), ts, axis=0)
-    normalization_term_g = trapezoid(pdf_g((ts)) * prob_lower_g((ts)), ts, axis=0)
+    normalization_term_g = trapezoid(vmap(pdf_g)(ts) * vmap(prob_lower_g)(ts), ts, axis=0)
     conditional_pdf_g = pdf_g(-travel_time.df(t_a)) * prob_lower_g(-travel_time.df(t_a)) / normalization_term_g
     prob_allowed_g = conditional_pdf_g * relu(travel_time.d2f(t_a))
 
