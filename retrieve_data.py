@@ -35,21 +35,25 @@ def likelihood(travel_time, t_a, mu_b, mu_g, mu_t, sigma, sigma_t):
     # is the probability that a point is allowed to be an internal
     # minimum for some realization of beta
 
-    lower_inner_int = lambda t: (lambda s: jnorm.pdf(s, mu_t, sigma_t)
+    lower_inner_int_b = lambda t: (lambda s: jnorm.pdf(s, mu_t, sigma_t)
                                  * (t < find_b0(s, travel_time)))
 
     t_points = 800
     ts = jnp.linspace(0, 24, t_points)
 
-    prob_lower_b = lambda t: trapezoid(vmap(lower_inner_int(t))(ts), ts, axis=0)
-
-    # normalization_term_b = trapezoid(pdf_b(vmap(travel_time.df)(ts)) * prob_lower_b(vmap(travel_time.df)(ts)), ts)
-    normalization_term_b = trapezoid(pdf_b((ts)) * prob_lower_b((ts)), ts)
-    
+    prob_lower_b = lambda t: trapezoid(vmap(lower_inner_int_b(t))(ts), ts, axis=0)
+    normalization_term_b = trapezoid(pdf_b((ts)) * prob_lower_b((ts)), ts, axis=0)
     conditional_pdf_b = pdf_b(travel_time.df(t_a)) * prob_lower_b(travel_time.df(t_a)) / normalization_term_b
-    
     prob_allowed_b = conditional_pdf_b * relu(travel_time.d2f(t_a))
-    prob_allowed_g = pdf_g(-travel_time.df(t_a)) * relu(travel_time.d2f(t_a))
+
+    lower_inner_int_g = lambda t: (lambda s: jnorm.pdf(s, mu_t, sigma_t)
+                                   * (t < find_g0(s, travel_time)))
+
+    prob_lower_g = lambda t: trapezoid(vmap(lower_inner_int_g(t))(ts), ts, axis=0)
+    normalization_term_g = trapezoid(pdf_g((ts)) * prob_lower_g((ts)), ts, axis=0)
+    conditional_pdf_g = pdf_g(-travel_time.df(t_a)) * prob_lower_g(-travel_time.df(t_a)) / normalization_term_g
+    prob_allowed_g = conditional_pdf_g * relu(travel_time.d2f(t_a))
+
 
     # This probability has to be mutiplied to the probability that t*
     # is actually in the interval that would yield a constant minimum,
