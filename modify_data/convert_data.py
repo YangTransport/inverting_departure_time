@@ -12,7 +12,7 @@ plt.hlines([0.6, -1.4], x[0], x[-1], 'r')
 plt.show()
 
 #%%
-new_tt = np.array([arrival_time(d, 10*60, x, travel_times) for d in x]) - x
+new_tt = np.array([arrival_time(d, 2, x, 1/travel_times) for d in x]) - x
 
 plt.plot(x, new_tt)
 plt.plot(x, travel_times)
