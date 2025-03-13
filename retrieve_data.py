@@ -68,7 +68,7 @@ def likelihood(travel_time, t_a, mu_b, mu_g, mu_t, sigma, sigma_t):
         return (jnorm.cdf(gs[1], mu_t, sigma_t) - jnorm.cdf(gs[0], mu_t, sigma_t)) * pdf_g(g)
     
     min_b = 1e-2
-    points = 50
+    points = 200
     x_b = jnp.linspace(min_b, travel_time.maxb, points)
     fx_b = vmap(inner_int_b)(x_b)
     int_result_b = trapezoid(fx_b, x_b, axis=0)
