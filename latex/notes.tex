@@ -444,6 +444,8 @@ the conditional pdf \(f_{I | L}(t_a | 0)\) and the probability \(\mathbb{P}(L=0 
 
 \subsubsection{Estimation of $f_{I | L}(t_a | 0)$}
 
+\textcolor{red}{From now on, I am neglecting the effect of $\gamma$ on early arrivals (and will neglect the effect of $\beta$ on late arrivals). This is probably ok as long as I am assuming the intervals yielded by the parameters to be disjoint, will have to be looked at better once the intervals are not disjoint anymore.}
+
 \(f_{I | L}(t_a | 0)\) is the distribution arising from applying the transformation \(b_i\) to a variable distributed as \(\beta\) (similarly for \(\gamma\)).
 
 We have
@@ -505,6 +507,17 @@ Now, the only thing not trivial to compute is the probability \(\mathbb{P}(tt_a'
 Instead of using the cdf \(F_{T^*}\) inverting \(\beta_0\) (that is not injective), it is probably better to directly evaluate it using an integral:
 \begin{equation*}
   \mathbb{P}(tt_a'(t) < \beta_0(T^*)) = \int_{-\infty}^\infty f_{T^*}(s) \mathbb{1}(tt_a'(t) < \beta_0(s)) ds
+\end{equation*}
+
+Similarily, for \(\gamma\)
+\begin{equation*}
+  f_{\gamma | L}(-tt_a'(t_a) | 1) = \frac{f_\gamma(-tt_a'(t_a))\mathbb{P}(-tt_a'(t_a) < \gamma_0(T^*))}{\int_{-\infty}^\infty f_\gamma(t)\mathbb{P}(t < \gamma_0(T^*)) dt}
+\end{equation*}
+
+and
+
+\begin{equation*}
+  \mathbb{P}(-tt_a'(t) < \gamma_0(T^*)) = \int_{-\infty}^\infty f_{T^*}(s) \mathbb{1}(-tt_a'(t) < \gamma_0(s)) ds
 \end{equation*}
 
 \subsubsection{Estimation of $\mathbb{P}(L=0 | Q=1)$}
