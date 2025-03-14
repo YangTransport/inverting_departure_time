@@ -33,6 +33,8 @@ ax_scatter.fill_between([x.min(), x.max()], [g_low]*2, [g_high]*2, alpha=.1, col
 ax_scatter.scatter(x, t_as, s=2)
 ax_scatter.set_xlim(x.min(), x.max())
 ax_scatter.set_ylim(4, 15)
+ax_scatter.set_xticks([])
+ax_scatter.set_ylabel(r"$t_a$ (h)")
 fig_scatter.savefig("slides/img/t_as.png", dpi=600)
 
 y = np.linspace(4, 15, 500)
@@ -44,8 +46,10 @@ plt.close(fig_scatter)
 
 fig_bin, ax_bin = plt.subplots(figsize=(6, 4))
 n, bins, patches = ax_bin.hist(t_as, 80)
-# ax_bin.fill_betweenx([ax_bin.get_ylim()[0], ax_bin.get_ylim()[1]], [b_high]*2, [b_low]*2, color='red', alpha=.2)
-# ax_bin.fill_betweenx([ax_bin.get_ylim()[0], ax_bin.get_ylim()[1]], [g_high]*2, [g_low]*2, color='green', alpha=.2)
+
+ax_bin.set_yticks([])
+ax_bin.set_xlabel(r"$t_a$ (h)")
+
 for b, p in zip(bins, patches):
     if b < b_high and b > b_low - p.get_width():
         p.set_facecolor(early_color)
@@ -68,6 +72,9 @@ text_dist = .15
 x = np.linspace(6, 13, 300)
 fig_tt, ax_tt = plt.subplots(figsize=(7, 4))
 ax_tt.plot(x, tt.f(x), linewidth=2, color=tt_color, label='Travel time')
+
+ax_tt.set_yticks([])
+ax_tt.set_xlabel(r"$t^*$ (h)")
 
 tg_b = ax_tt.plot([bs[0], bs[1]], [tt.f(bs[0]), tt.f(bs[1])], color=early_color)
 h_b =  ax_tt.plot([bs[0], bs[0] + h_len], [tt.f(bs[0])]*2, color=early_color)
