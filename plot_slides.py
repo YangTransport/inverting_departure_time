@@ -16,6 +16,8 @@ betas, gammas, ts, t_as = generate_arrival(num, tt, *par)
 bs = find_bs(par[0], tt)
 gs = find_gs(par[1], tt)
 
+early_color = "green"
+late_color="red"
 #%%
 x = np.random.normal(size=num)
 fig_scatter, ax_scatter = plt.subplots(figsize=(4, 5))
