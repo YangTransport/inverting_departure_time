@@ -130,7 +130,7 @@
   Contour plots for the likelihood functions (that is, given the data, defined on \(\mathbb{R}^5\)) are possible by freezing some of the parameters to their true value,
   and evaluating the likelihood of a synthetic dataset generated with the given parameters.
 
-  By plotting the mean parameters \(\mu_\beta, \mu_\gamma\) it can be seen how the likelihood is better behaved when the variance \(\sigma\) is not too low:
+  By plotting the mean parameters \(\mu_\beta, \mu_\gamma\) (and freezing \(t^*, \sigma\) and \(\sigma_t\) to their known, true value) it can be seen how the likelihood is better behaved when the variance \(\sigma\) is not too low:
 
   a low value for the variance could yield indeed a local minimum for a different value of the mean \(\mu_\gamma\).
   
@@ -141,16 +141,22 @@
   the likelihood function is well behaved, and the optimizers show no problems in converging:
 
   Here is the likelihood for variance \alt<2>{\(\sigma = 0.03\)}{\(\sigma = 0.3\)}}
+\only<-3>{
 
   \begin{center}
     \alt<-1>{\includegraphics[width=.9\textwidth]{contour_beautiful}}{\includegraphics[width=.8\textwidth]{contour_ugly}}
   \end{center}
-
-  \only<3->{
+}
+  \only<3>{
     It can be seen how the likelihood is almost constant in \(\mu_\gamma\), and thus problematic to optimize.
 
     There actually is a sharp minimum in the real parameters, but it is so sharp that it is difficult to see, and often smaller than the grid used for plotting the contour.
   }
+  \only<4>{
+    
+    Lastly, with high variances the minimum becomes extremely flat,
+    yielding another situation in which the optimizers are not very precise.
+    }
 \end{frame}
 
 \end{document}
