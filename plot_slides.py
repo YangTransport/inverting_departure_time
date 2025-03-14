@@ -23,8 +23,8 @@ b_low = bs[0] - par[3]*1.7
 b_high =bs[0] + par[3]*1.7
 g_low = gs[1] - par[3]/2
 g_high = gs[1] + par[3]/2
-ax_scatter.fill_between([x.min(), x.max()], [b_low]*2, [b_high]*2, alpha=.1, color="red")
-ax_scatter.fill_between([x.min(), x.max()], [g_low]*2, [g_high]*2, alpha=.1, color="green")
+ax_scatter.fill_between([x.min(), x.max()], [b_low]*2, [b_high]*2, alpha=.1, color=early_color)
+ax_scatter.fill_between([x.min(), x.max()], [g_low]*2, [g_high]*2, alpha=.1, color=late_color)
 ax_scatter.scatter(x, t_as, s=2)
 ax_scatter.set_xlim(x.min(), x.max())
 ax_scatter.set_ylim(4, 15)
@@ -42,14 +42,14 @@ n, bins, patches = ax_bin.hist(t_as, 80)
 # ax_bin.fill_betweenx([ax_bin.get_ylim()[0], ax_bin.get_ylim()[1]], [g_high]*2, [g_low]*2, color='green', alpha=.2)
 for b, p in zip(bins, patches):
     if b < b_high and b > b_low - (bins[1] - bins[0]):
-        p.set_facecolor("red")
+        p.set_facecolor(early_color)
     if b < g_high and b > g_low - (bins[1] - bins[0]):
-        p.set_facecolor("green")
+        p.set_facecolor(late_color)
 
 x = np.linspace(6, 13, 300)
 tt_line = ax_bin.plot(x, tt.f(x)*40, color="purple", linewidth=2, label="Travel time function")
 
 labels = [tt_line[0].get_label(), "Early arrivals", "Late arrivals"]
-handles = [tt_line[0], Patch(facecolor="red"), Patch(facecolor="green")]
+handles = [tt_line[0], Patch(facecolor=early_color), Patch(facecolor=late_color)]
 ax_bin.legend(handles, labels)
 fig_bin.savefig("slides/img/t_as_bins_tt.png", dpi=600)
