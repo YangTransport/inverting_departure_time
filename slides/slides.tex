@@ -78,7 +78,7 @@
 \end{frame}
 
 \begin{frame}{Optimal arrival time samples}
-  As can be seen here, the early arrival are strictly correlated to the shape of the travel time function.
+  As can be seen here, the early and late arrival are strictly correlated to the shape of the travel time function.
   \begin{center}
     \includegraphics[width=\textwidth]{t_as_bins_tt}
   \end{center}
@@ -115,6 +115,42 @@
   \begin{center}
     \alt<2>{\includegraphics[width=.9\textwidth]{hist_ll}}{\includegraphics[width=.9\textwidth]{hist_no_ll}}
   \end{center}
+\end{frame}
+
+\begin{frame}{Computation of the likelihood function}
+  Computing the likelihood \(\mathcal{L}(\mu_\beta, \mu_\gamma, \mu_t, \sigma, \sigma_t\ \vert\ T_a = t_a)\) is computationally not trivial, since it requires to invert various functions and to compute different integrals.
+
+  It was made possible by extensively using the python library JAX (cite JAX paper), which considerably sped up the calculations (by different orders of magnitude) and allowed us to have a fast enough likelihood function to be able to run an optimizer over it.
+
+  Moreover, the library JAXopt (cite JAXopt paper)  would allow us to run a Gradient Descent algorithm over the total likelihood.
+  For problems with numerical stability, this approach is not fully developed yet, but will be explored in the future.
+\end{frame}
+
+\begin{frame}{Properties of the likelihood function}
+  Contour plots for the likelihood functions (that is, given the data, defined on \(\mathbb{R}^5\)) are possible by freezing some of the parameters to their true value,
+  and evaluating the likelihood of a synthetic dataset generated with the given parameters.
+
+  By plotting the mean parameters \(\mu_\beta, \mu_\gamma\) it can be seen how the likelihood is better behaved when the variance \(\sigma\) is not too low:
+
+  a low value for the variance could yield indeed a local minimum for a different value of the mean \(\mu_\gamma\).
+  
+\end{frame}
+
+\begin{frame}{Changing the variance of the parameters \(\beta\), \(\gamma\)}
+  \only<-2>{With variances that are neither too high nor too low,
+  the likelihood function is well behaved, and the optimizers show no problems in converging:
+
+  Here is the likelihood for variance \alt<2>{\(\sigma = 0.03\)}{\(\sigma = 0.3\)}}
+
+  \begin{center}
+    \alt<-1>{\includegraphics[width=.9\textwidth]{contour_beautiful}}{\includegraphics[width=.8\textwidth]{contour_ugly}}
+  \end{center}
+
+  \only<3->{
+    It can be seen how the likelihood is almost constant in \(\mu_\gamma\), and thus problematic to optimize.
+
+    There actually is a sharp minimum in the real parameters, but it is so sharp that it is difficult to see, and often smaller than the grid used for plotting the contour.
+  }
 \end{frame}
 
 \end{document}

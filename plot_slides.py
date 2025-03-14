@@ -14,7 +14,7 @@ import jax.numpy as jnp
 tt = TravelTime(asymm_gaussian_plateau())
 
 num = 1000
-par = (.7, 1.2, 9.5, .1, 1)
+par = (.4, 1.3, 9.5, .3, 1)
 np.random.seed(14)
 betas, gammas, ts, t_as = generate_arrival(num, tt, *par)
 
@@ -127,3 +127,43 @@ ax_ll.fill_between(x, lx*2400, color="orange", alpha=.6, label=r'Likelihood of $
 ax_ll.legend()
 fig_ll.savefig("slides/img/hist_ll.png", dpi=600)
 plt.close(fig_ll)
+
+#%%
+par = (.4, 1.3, 9.5, .3, 1)
+_, _, _, t_as = generate_arrival(num, tt, *par)
+
+ll = lambda x, y: total_log_lik(tt, t_as)(x, y, *par[2:])
+betas_contour =jnp.linspace(.01, .99, 200)
+gammas_contour = jnp.linspace(1.01, 4, 200)
+matrix_ll = vmap(vmap(ll, (0, None)), (None, 0))(betas_contour, gammas_contour) # vmap(ll_actual)(*m_contour)
+
+#%%
+
+fig_ct, ax_ct = plt.subplots(figsize=(6, 4))
+X, Y = jnp.meshgrid(betas_contour, gammas_contour)
+ax_ct.contour(betas_contour, gammas_contour, matrix_ll, levels=50)
+ax_ct.plot(par[0], par[1], 'or')
+ax_ct.set_xlabel(r"$\mu_\beta$")
+ax_ct.set_ylabel(r"$\mu_\gamma$")
+fig_ct.savefig("slides/img/contour_beautiful.png", dpi=600)
+
+#%%
+
+par = (.4, 1.3, 9.5, .03, 1)
+_, _, _, t_as = generate_arrival(1000, tt, *par)
+
+ll = lambda x, y: total_log_lik(tt, t_as)(x, y, *par[2:])
+betas_contour =jnp.linspace(.01, .99, 200)
+gammas_contour = jnp.linspace(1.01, 4, 200)
+matrix_ll = vmap(vmap(ll, (0, None)), (None, 0))(betas_contour, gammas_contour) # vmap(ll_actual)(*m_contour)
+
+#%%
+
+fig_ctb, ax_ctb = plt.subplots(figsize=(6, 4))
+X, Y = jnp.meshgrid(betas_contour, gammas_contour)
+ax_ctb.contour(betas_contour, gammas_contour, matrix_ll, levels=50)
+ax_ctb.plot(par[0], par[1], 'or')
+ax_ctb.set_xlabel(r"$\mu_\beta$")
+ax_ctb.set_ylabel(r"$\mu_\gamma$")
+fig_ctb.savefig("slides/img/contour_ugly.png", dpi=600)
+fig_ctb.show()
