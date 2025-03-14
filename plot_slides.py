@@ -43,9 +43,9 @@ n, bins, patches = ax_bin.hist(t_as, 80)
 # ax_bin.fill_betweenx([ax_bin.get_ylim()[0], ax_bin.get_ylim()[1]], [b_high]*2, [b_low]*2, color='red', alpha=.2)
 # ax_bin.fill_betweenx([ax_bin.get_ylim()[0], ax_bin.get_ylim()[1]], [g_high]*2, [g_low]*2, color='green', alpha=.2)
 for b, p in zip(bins, patches):
-    if b < b_high and b > b_low - (bins[1] - bins[0]):
+    if b < b_high and b > b_low - p.get_width():
         p.set_facecolor(early_color)
-    if b < g_high and b > g_low - (bins[1] - bins[0]):
+    if b < g_high and b > g_low - p.get_width():
         p.set_facecolor(late_color)
 
 x = np.linspace(6, 13, 300)
