@@ -5,6 +5,9 @@ from generate_data import  generate_arrival
 from travel_times import asymm_gaussian_plateau
 from utils import TravelTime
 from find_points import find_bs, find_gs
+from retrieve_data import likelihood
+from jax import vmap
+import jax.numpy as jnp
 
 #%%
 
@@ -104,3 +107,23 @@ ax_tt.legend()
 
 fig_tt.savefig("slides/img/tt_early_late.png", dpi=600)
 plt.close(fig_tt)
+
+#%%
+_, _, _, points = generate_arrival(100000, tt, *par)
+x = jnp.linspace(6, 13, 300)
+ll = lambda x: likelihood(tt, x, *par)
+lx = vmap(ll)(x)
+
+#%%
+
+fig_ll, ax_ll = plt.subplots(figsize=(6, 4))
+ax_ll.hist(points, 400, label='Sampled points')
+ax_ll.set_xlim(6, 12.5)
+ax_ll.legend()
+ax_ll.set_yticks([])
+ax_ll.set_xlabel(r"$t_a$ (h)")
+fig_ll.savefig("slides/img/hist_no_ll.png", dpi=600)
+ax_ll.fill_between(x, lx*2400, color="orange", alpha=.6, label=r'Likelihood of $t_a$')
+ax_ll.legend()
+fig_ll.savefig("slides/img/hist_ll.png", dpi=600)
+plt.close(fig_ll)
