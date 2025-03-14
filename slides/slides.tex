@@ -93,11 +93,20 @@
   f_{T_a; \mu_\beta, \mu_\gamma, \mu_t, \sigma, \sigma_t}(t_a)
   \end{equation*}
   where \(f_{T_a; \theta}\) is the probability density function for the random variable \(T_a\),
-  which describes the resulting optimal arrival time (namely, the one depicted in the plots above).
+  which describes the resulting optimal arrival time (namely, the one depicted in the plots above), given the parameters \(\theta\).
   
   Once the likelihood function is built, running an optimizer on the total likelihood of the dataset retrieves the true parameters for a given dataset.
 \end{frame}
 
+\begin{frame}{Building the likelihood function}
+  To build the likelihood function, each point is assigned a probability of being an early, late or on time arrival.
+
+  This is done by taking advantage of the key observation that early and late arrivals only occur when the desired arrival time \(t^*\) falls in certain zones defined by the parameters \(\alpha\) and \(\gamma\), namely the shaded zones in the plot below
+
+  \begin{center}
+    \includegraphics[width=.9\textwidth]{tt_early_late}
+  \end{center}
+\end{frame}
 \end{document}
 
 %%% Local Variables:
