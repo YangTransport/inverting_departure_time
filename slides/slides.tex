@@ -18,7 +18,7 @@
   
 \end{frame}
 
-\begin{frame}{Intro}
+\begin{frame}{The setting}
   \only<-2>{
     We are assuming, as in (cite something) the cost function to be
     \begin{equation}
@@ -62,26 +62,40 @@
     }
 \end{frame}
 
-\begin{frame}
+\begin{frame}{Optimal arrival time samples}
   
   \begin{columns}
     \column{.4\linewidth}
       Drawing samples from these distributions, using a typical travel time function \(tt(t_a)\), the optima will be (in general) distributed as in the image,
-      where the red and green zones roughly correspond to, respectively, early and late arrivals.
+      where the green and red zones roughly correspond to, respectively, early and late arrivals.
 
       Note that the x axis is random white noise, to better display the data distribution.
-      Here the travel time function is shown, to demonstrate when these early and late arrivals actually occur.
+      
     \column{.6\linewidth}
     \centering
       \includegraphics[width=\textwidth]{t_as}
   \end{columns}
 \end{frame}
 
-\begin{frame}
+\begin{frame}{Optimal arrival time samples}
   As can be seen here, the early arrival are strictly correlated to the shape of the travel time function.
   \begin{center}
     \includegraphics[width=\textwidth]{t_as_bins_tt}
   \end{center}
+\end{frame}
+
+\begin{frame}{Methodology}
+  Our goal is thus finding, from the data about actual arrival times, the most likely values of mean and variances of the parameters \(\beta\) and \(\gamma\), on top of mean and variance for the desired arrival time \(t^*\).
+
+  This was done by modelling the actual likelihood of each data point for a given parameter set
+  \begin{equation*}
+    \mathcal{L}(\mu_\beta, \mu_\gamma, \mu_t, \sigma, \sigma_t\ \vert\ T_a = t_a) =
+  f_{T_a; \mu_\beta, \mu_\gamma, \mu_t, \sigma, \sigma_t}(t_a)
+  \end{equation*}
+  where \(f_{T_a; \theta}\) is the probability density function for the random variable \(T_a\),
+  which describes the resulting optimal arrival time (namely, the one depicted in the plots above).
+  
+  Once the likelihood function is built, running an optimizer on the total likelihood of the dataset retrieves the true parameters for a given dataset.
 \end{frame}
 
 \end{document}
