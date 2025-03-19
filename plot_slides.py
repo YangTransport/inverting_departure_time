@@ -5,16 +5,16 @@ from generate_data import  generate_arrival
 from travel_times import asymm_gaussian_plateau
 from utils import TravelTime
 from find_points import find_bs, find_gs
-from retrieve_data import likelihood
+from retrieve_data import likelihood, total_log_lik
 from jax import vmap
 import jax.numpy as jnp
 
 #%%
 
-tt = TravelTime(asymm_gaussian_plateau())
+tt = TravelTime(asymm_gaussian_plateau(sigma_l=.7, sigma_r=.4, plateau_len=.4))
 
 num = 1000
-par = (.4, 1.3, 9.5, .3, 1)
+par = [.8, 1.4, 9.5, .3, 1]
 np.random.seed(14)
 betas, gammas, ts, t_as = generate_arrival(num, tt, *par)
 
