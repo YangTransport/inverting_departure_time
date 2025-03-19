@@ -43,7 +43,12 @@ def likelihood(travel_time, t_a, mu_b, mu_g, mu_t, sigma, sigma_t):
 
     prob_lower_b = lambda t: trapezoid(vmap(lower_inner_int_b(t))(ts), ts, axis=0)
     normalization_term_b = trapezoid(vmap(pdf_b)(ts) * vmap(prob_lower_b)(ts), ts, axis=0)
-    conditional_pdf_b = pdf_b(travel_time.df(t_a)) * prob_lower_b(travel_time.df(t_a)) / normalization_term_b
+
+    # Here, nan_to_num is used to avoid situations in which the
+    # division is 0/0.  In this case, the result can be assumed to be
+    # zero since the denominator is actually 0.
+    
+    conditional_pdf_b = jnp.nan_to_num(pdf_b(travel_time.df(t_a)) * prob_lower_b(travel_time.df(t_a)) / normalization_term_b)
     prob_allowed_b = conditional_pdf_b * relu(travel_time.d2f(t_a))
 
     lower_inner_int_g = lambda t: (lambda s: jnorm.pdf(s, mu_t, sigma_t)
@@ -51,7 +56,8 @@ def likelihood(travel_time, t_a, mu_b, mu_g, mu_t, sigma, sigma_t):
 
     prob_lower_g = lambda t: trapezoid(vmap(lower_inner_int_g(t))(ts), ts, axis=0)
     normalization_term_g = trapezoid(vmap(pdf_g)(ts) * vmap(prob_lower_g)(ts), ts, axis=0)
-    conditional_pdf_g = pdf_g(-travel_time.df(t_a)) * prob_lower_g(-travel_time.df(t_a)) / normalization_term_g
+    
+    conditional_pdf_g = jnp.nan_to_num(pdf_g(-travel_time.df(t_a)) * prob_lower_g(-travel_time.df(t_a)) / normalization_term_g)
     prob_allowed_g = conditional_pdf_g * relu(travel_time.d2f(t_a))
 
 
