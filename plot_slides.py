@@ -122,14 +122,17 @@ ax_ll.set_xlim(6, 12.5)
 ax_ll.legend()
 ax_ll.set_yticks([])
 ax_ll.set_xlabel(r"$t_a$ (h)")
+shade = ax_ll.fill_between(x, lx*4300, color="orange", alpha=.4, label=r'Likelihood of $t_a$')
+shade.set_visible(False)
 fig_ll.savefig("slides/img/hist_no_ll.png", dpi=600)
-ax_ll.fill_between(x, lx*2400, color="orange", alpha=.6, label=r'Likelihood of $t_a$')
+shade.set_visible(True)
 ax_ll.legend()
 fig_ll.savefig("slides/img/hist_ll.png", dpi=600)
 plt.close(fig_ll)
 
 #%%
-par = (.4, 1.3, 9.5, .3, 1)
+# par = (.4, 1.3, 9.5, .3, 1)
+par[3] = .3
 _, _, _, t_as = generate_arrival(num, tt, *par)
 
 ll = lambda x, y: total_log_lik(tt, t_as)(x, y, *par[2:])
@@ -148,8 +151,8 @@ ax_ct.set_ylabel(r"$\mu_\gamma$")
 fig_ct.savefig("slides/img/contour_beautiful.png", dpi=600)
 
 #%%
-
-par = (.4, 1.3, 9.5, .03, 1)
+# par = (.4, 1.3, 9.5, .03, 1)
+par[3]=.03
 _, _, _, t_as = generate_arrival(1000, tt, *par)
 
 ll = lambda x, y: total_log_lik(tt, t_as)(x, y, *par[2:])
@@ -166,4 +169,3 @@ ax_ctb.plot(par[0], par[1], 'or')
 ax_ctb.set_xlabel(r"$\mu_\beta$")
 ax_ctb.set_ylabel(r"$\mu_\gamma$")
 fig_ctb.savefig("slides/img/contour_ugly.png", dpi=600)
-fig_ctb.show()
