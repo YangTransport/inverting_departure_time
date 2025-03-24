@@ -16,7 +16,7 @@ def find_bs(beta, travel_time):
     # because the function will become shallower the lower the beta
     # is.
     stepsize = lambda n: steps()(n)/beta
-    in_obj = lambda x: travel_time(x) - beta*x
+    in_obj = lambda x: travel_time.f(x) - beta*x
     solver = GradientDescent(fun=in_obj, acceleration=False, stepsize=stepsize)
     b_i, _ = solver.run(0.)
 
@@ -24,7 +24,7 @@ def find_bs(beta, travel_time):
     # whith slope beta, crosses the travel time function.
     # This point is found via a bisection
         
-    fin_obj = lambda x: travel_time(x) - beta*(x - b_i) - travel_time(b_i)
+    fin_obj = lambda x: travel_time.f(x) - beta*(x - b_i) - travel_time.f(b_i)
 
     # Two points where to start the bisection are computed
     step = .5
@@ -43,7 +43,7 @@ def find_b0(t_a, travel_time):
     """
 
     # A really low and a really high value are defined as starting points for the bisection
-    min = 1e-1
+    min = 1e-2
     max = 1
 
     # The objective function, an indicator function that shows wether the parameter t_a
@@ -73,14 +73,14 @@ def find_gs(gamma, travel_time):
     Returns a couple containing initial and final points of the interval.
 
     NOTE: This function's result will be meaningless if called on
-    values of gamma greatest than the minimum steep of the travel time
-    function. Don't do that
+    values of gamma greater than the maximum steep of the negative
+    travel time function. Don't do that
 
     """
     
     # A gradient descent algorithm finds the final point
     stepsize = lambda n: steps()(n)/gamma
-    fin_obj = lambda x: travel_time(x) + gamma*x
+    fin_obj = lambda x: travel_time.f(x) + gamma*x
     solver = GradientDescent(fun=fin_obj, acceleration=False, stepsize=stepsize)
     g_e, state = solver.run(24.)
 
@@ -89,7 +89,7 @@ def find_gs(gamma, travel_time):
     # function.
     # This point is found via a bisection
         
-    fin_obj = lambda x: travel_time(x) + gamma*(x - g_e) - travel_time(g_e)
+    fin_obj = lambda x: travel_time.f(x) + gamma*(x - g_e) - travel_time.f(g_e)
 
     # Two points where to start the bisection are computed
     step = .5
